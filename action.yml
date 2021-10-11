@@ -1,13 +1,10 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: 'release-npm-action'
+description: 'Verifies, builds, versions and documents a plugin release to npm.'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  NPM_TOKEN:
+    description: 'npm Automation token used to publish package.'
     required: true
-    default: '1000'
-outputs:
-  time: # output will be available to future steps
-    description: 'The message to output'
 runs:
+  # max available node version, see https://github.com/actions/runner/issues/772
   using: 'node12'
   main: 'dist/index.js'
