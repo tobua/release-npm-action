@@ -53,6 +53,10 @@ export const createRelease = async (version, first, major) => {
     return
   }
 
+  if (getInput('GITHUB_TOKEN')) {
+    debug('has github input')
+  }
+
   if (process.env.GITHUB_TOKEN) {
     debug('has github token')
   }

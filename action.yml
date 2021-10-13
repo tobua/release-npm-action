@@ -4,7 +4,10 @@ inputs:
   NPM_TOKEN:
     description: 'npm Automation token used to publish package.'
     required: true
+  GITHUB_TOKEN:
+    description: 'Used to create GitHub release with changelog contents.'
+    required: false
 runs:
   # max available node version, see https://github.com/actions/runner/issues/772
   using: 'node12'
-  main: 'index.cjs'
+  main: 'dist.cjs'
