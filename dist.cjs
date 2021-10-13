@@ -48952,7 +48952,6 @@ var import_path = __toModule(require("path"));
 var import_core = __toModule(require_core());
 var getPackageJsonPath = () => (0, import_path.join)(process.cwd(), "package.json");
 var getPackage = () => {
-  (0, import_core.info)(`package cwd: ${process.cwd()}`);
   const packageJsonPath = getPackageJsonPath();
   (0, import_core.info)(packageJsonPath);
   const packageJsonFound = (0, import_fs.existsSync)(packageJsonPath);
@@ -49015,6 +49014,9 @@ var createRelease = async (version, first, major) => {
   if (debugMode) {
     return;
   }
+  if ((0, import_core2.getInput)("GITHUB_TOKEN")) {
+    (0, import_core2.debug)("has github input");
+  }
   if (process.env.GITHUB_TOKEN) {
     (0, import_core2.debug)("has github token");
   }
@@ -49064,6 +49066,7 @@ var publish = (dry) => {
   }
   let env = null;
   if ((0, import_core4.getInput)("NPM_TOKEN")) {
+    (0, import_core4.info)("has npm token");
     env = {
       env: {
         NODE_AUTH_TOKEN: (0, import_core4.getInput)("NPM_TOKEN")
@@ -49102,7 +49105,7 @@ var run = async () => {
     }
     const { first, version } = await getVersion(name);
     (0, import_core5.info)(`Publishing ${name} ${first ? "as first release" : `as ${version}`}.`);
-    createRelease(version, first, major);
+    await createRelease(version, first, major);
     publish(debugMode);
   } catch (error) {
     (0, import_core5.setFailed)(error.message);

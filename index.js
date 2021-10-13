@@ -40,7 +40,7 @@ const run = async () => {
 
     info(`Publishing ${name} ${first ? 'as first release' : `as ${version}`}.`)
 
-    createRelease(version, first, major)
+    await createRelease(version, first, major)
 
     publish(debugMode)
   } catch (error) {

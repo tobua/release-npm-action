@@ -11,6 +11,7 @@ export const publish = (dry) => {
   let env = null
 
   if (getInput('NPM_TOKEN')) {
+    info('has npm token')
     env = {
       env: {
         NODE_AUTH_TOKEN: getInput('NPM_TOKEN'),

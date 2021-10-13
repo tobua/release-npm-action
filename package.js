@@ -5,7 +5,6 @@ import { info } from '@actions/core'
 export const getPackageJsonPath = () => join(process.cwd(), 'package.json')
 
 export const getPackage = () => {
-  info(`package cwd: ${process.cwd()}`)
   const packageJsonPath = getPackageJsonPath()
   info(packageJsonPath)
   const packageJsonFound = existsSync(packageJsonPath)
