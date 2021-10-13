@@ -48410,7 +48410,9 @@ var require_merge_config = __commonJS({
             type = repo.type;
           }
           if (type) {
-            hostOpts = require("../hosts/" + type);
+            console.log(process.cwd())
+            hostOpts = require("../hosts/" + type + ".json");
+            console.log(require.resolve('.'))
             context2 = _.assign({
               issue: hostOpts.issue,
               commit: hostOpts.commit
@@ -49009,16 +49011,16 @@ var createRelease = async (version, first, major) => {
   if (!debugMode) {
     tagName = (0, import_child_process.execSync)("git describe HEAD --abbrev=0");
     (0, import_core2.info)(`Pushed release tag ${tagName}.`);
-    (0, import_core2.debug)(`version: ${version} tagName: ${tagName}`);
   }
-  if (debugMode) {
-    return;
-  }
+  (0, import_core2.debug)(`version: ${version} tagName: ${tagName}`);
   if ((0, import_core2.getInput)("GITHUB_TOKEN")) {
     (0, import_core2.debug)("has github input");
   }
   if (process.env.GITHUB_TOKEN) {
     (0, import_core2.debug)("has github token");
+  }
+  if (debugMode) {
+    return;
   }
   const github = new import_github.getOctokit(process.env.GITHUB_TOKEN);
   const createReleaseResponse = await github.repos.createRelease({

@@ -45,13 +45,9 @@ export const createRelease = async (version, first, major) => {
     tagName = execSync('git describe HEAD --abbrev=0')
 
     info(`Pushed release tag ${tagName}.`)
-
-    debug(`version: ${version} tagName: ${tagName}`)
   }
 
-  if (debugMode) {
-    return
-  }
+  debug(`version: ${version} tagName: ${tagName}`)
 
   if (getInput('GITHUB_TOKEN')) {
     debug('has github input')
@@ -59,6 +55,10 @@ export const createRelease = async (version, first, major) => {
 
   if (process.env.GITHUB_TOKEN) {
     debug('has github token')
+  }
+
+  if (debugMode) {
+    return
   }
 
   const github = new getOctokit(process.env.GITHUB_TOKEN)
