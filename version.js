@@ -1,4 +1,4 @@
-import { manifest } from 'pacote'
+import fetch from 'node-fetch'
 import { info } from '@actions/core'
 
 export const getVersion = async (name) => {
@@ -8,9 +8,10 @@ export const getVersion = async (name) => {
   let version
 
   try {
-    const contents = await manifest(name)
-    first = !contents.version
-    version = contents.version
+    const response = await fetch(`https://registry.npmjs.org/${name}/latest`)
+    const body = await response.json()
+    first = body === 'Not Found' || typeof body !== 'object' || !body.version
+    version = body.version
   } catch (error) {
     first = true
   }

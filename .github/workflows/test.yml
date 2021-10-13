@@ -12,13 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm install
-      - run: npm run build
       - run: npm test
 
   action:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: npm install
       - uses: ./
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}

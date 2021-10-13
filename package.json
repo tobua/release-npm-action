@@ -8,17 +8,18 @@
   "author": "Matthias Giger",
   "scripts": {
     "lint": "eslint .",
-    "build": "ncc build index.js -o dist --source-map --license licenses.txt --external pacote --external standard-version",
+    "build": "ncc build index.js -o dist --source-map --license licenses.txt",
+    "esbuild": "esbuild index.js --bundle --platform=node --outfile=dist.cjs --external:'conventional-changelog-conventionalcommits'",
     "test": "jest",
     "release": "npx standard-version"
   },
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@actions/github": "^5.0.0",
-    "pacote": "^12.0.0",
+    "node-fetch": "cjs",
     "standard-version": "^9.3.1"
   },
-  "main": "index.js",
+  "type": "module",
   "keywords": [
     "github",
     "action",
@@ -30,8 +31,10 @@
   "devDependencies": {
     "@babel/preset-env": "^7.15.8",
     "@vercel/ncc": "^0.31.1",
+    "esbuild": "^0.13.5",
     "eslint": "^8.0.0",
     "jest": "^27.2.5",
+    "pacote": "^12.0.2",
     "prettier": "^2.4.1"
   },
   "prettier": {
@@ -56,11 +59,6 @@
     "ignorePatterns": "dist"
   },
   "jest": {
-    "transform": {
-      "^.+\\.jsx?$": [
-        "babel-jest"
-      ]
-    },
     "modulePathIgnorePatterns": [
       "dist"
     ]

@@ -18,6 +18,8 @@ export const publish = (dry) => {
     }
   }
 
+  info(env)
+
   try {
     execSync(command, env)
   } catch (error) {

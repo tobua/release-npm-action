@@ -1,6 +1,6 @@
 import { execSync } from 'child_process'
 import { info, debug, getInput } from '@actions/core'
-import { GitHub, context } from '@actions/github'
+import { context, getOctokit } from '@actions/github'
 import standardVersion from 'standard-version'
 import { addPackageProperties } from './package.js'
 
@@ -10,9 +10,6 @@ export const getRelease = (debugMode) => {
   info(`commitMessage ${commitMessage}`)
   const release = commitMessage.includes('release-npm')
   const major = commitMessage.includes('release-npm major')
-
-  info(`release ${release}`)
-  info(`major ${major}`)
 
   return {
     release: debugMode || release, // TODO true for debugging purposes.
@@ -60,13 +57,14 @@ export const createRelease = async (version, first, major) => {
     debug('has github token')
   }
 
-  const github = new GitHub(process.env.GITHUB_TOKEN)
+  const github = new getOctokit(process.env.GITHUB_TOKEN)
 
   const createReleaseResponse = await github.repos.createRelease({
     owner: context.repo.owner,
     repo: context.repo.repo,
     tag_name: tagName,
     name: tagName,
+    // TODO Read body from CHANGELOG.md created when not in dry run mode.
     body: 'body',
   })
 

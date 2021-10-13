@@ -41,14 +41,21 @@ test('version: tries to get the version from npm.', async () => {
 
 // shows how the runner will run a javascript action with env / stdout protocol
 test('full: attempts to perform a release but fails.', () => {
-  process.env['NPM_TOKEN'] = 'debug'
+  process.env['INPUT_NPM_TOKEN'] = 'debug'
   process.env['ACTIONS_RUNNER_DEBUG'] = true
 
-  const filePath = path.join(process.cwd(), 'dist/index.js')
+  const filePath = path.join(process.cwd(), 'index.js')
 
   try {
     console.log(execSync(`node ${filePath}`, { env: process.env }).toString())
   } catch (error) {
-    console.log('error', error)
+    const output = error.stdout.toString()
+    console.log(output)
+    // Debug mode triggered by NPM_TOKEN=debug
+    expect(output).toContain('Running in debug mode')
+    // debug() statements printed because ACTIONS_RUNNER_DEBUG=true
+    expect(output).toContain('::debug::')
+    // action itself will not be published to npm
+    expect(output).toContain('Publishing release-npm-action as first release.')
   }
 })

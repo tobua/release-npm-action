@@ -7,4 +7,4 @@ inputs:
 runs:
   # max available node version, see https://github.com/actions/runner/issues/772
   using: 'node12'
-  main: 'dist/index.js'
+  main: 'index.cjs'

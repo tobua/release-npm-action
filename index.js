@@ -1,4 +1,5 @@
 import { getInput, info, debug, setFailed } from '@actions/core'
+import { execSync } from 'child_process'
 import { getPackage } from './package.js'
 import { getRelease, createRelease } from './release.js'
 import { getVersion } from './version.js'
@@ -13,6 +14,8 @@ const run = async () => {
       return setFailed('Missing NPM_TOKEN action secret.')
     }
 
+    debug(`release-npm-action with node: ${execSync('node -v').toString()}`)
+
     const debugMode = token === 'debug'
 
     if (debugMode) {
@@ -25,14 +28,9 @@ const run = async () => {
       return info('No release requested.')
     }
 
-    info(release)
-
-    debug('debug statement') // requires ACTIONS_RUNNER_DEBUG=true
-    info('info statement')
+    info(`${major ? 'Major' : 'Regular'} release requested.`)
 
     const { name, scripts, error } = getPackage()
-
-    console.log('debug mode', debugMode)
 
     if (error && !debugMode) {
       return setFailed(error)
@@ -40,7 +38,7 @@ const run = async () => {
 
     const { first, version } = await getVersion(name)
 
-    info(version)
+    info(`Publishing ${name} ${first ? 'as first release' : `as ${version}`}.`)
 
     createRelease(version, first, major)
 

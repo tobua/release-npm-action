@@ -28,7 +28,7 @@ test('Creates release tags with different configurations.', async () => {
   expect(console.info.mock.calls.length).toBe(0)
 
   let initialVersion = '1.0.0'
-  let targetVersion = '1.0.1'
+  let targetVersion = '1.' // Actual bump depends on commits made.
 
   await createRelease(initialVersion, false, false)
 
@@ -39,7 +39,7 @@ test('Creates release tags with different configurations.', async () => {
   let tagging = removeFormatting(console.info.mock.calls[4][0])
 
   expect(bump).toContain(`${initialVersion} to ${targetVersion}`)
-  expect(changelogEntry).toContain(`### ${targetVersion}`)
+  expect(changelogEntry).toContain(`# ${targetVersion}`)
   expect(tagging).toContain(`v${targetVersion}`)
 
   initialVersion = '1.0.0'
@@ -54,7 +54,7 @@ test('Creates release tags with different configurations.', async () => {
   tagging = removeFormatting(console.info.mock.calls[10][0])
 
   expect(bump).toContain(`${initialVersion} to ${targetVersion}`)
-  expect(changelogEntry).toContain(`## ${targetVersion}`)
+  expect(changelogEntry).toContain(`# ${targetVersion}`)
   expect(tagging).toContain(`v${targetVersion}`)
 
   initialVersion = '1.0.0'
