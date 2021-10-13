@@ -9,14 +9,14 @@
   "scripts": {
     "lint": "eslint .",
     "build": "ncc build index.js -o dist --source-map --license licenses.txt",
-    "esbuild": "esbuild index.js --bundle --platform=node --outfile=dist.cjs --external:'conventional-changelog-conventionalcommits'",
+    "esbuild": "esbuild index.js --bundle --platform=node --outfile=dist.cjs --external:standard-version --external:node-fetch --external:@actions/core --external:@actions/github",
     "test": "jest",
     "release": "npx standard-version"
   },
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@actions/github": "^5.0.0",
-    "node-fetch": "cjs",
+    "node-fetch": "^3.0.0",
     "standard-version": "^9.3.1"
   },
   "type": "module",
