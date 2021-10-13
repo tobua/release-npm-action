@@ -50,7 +50,6 @@ test('full: attempts to perform a release but fails.', () => {
     console.log(execSync(`node ${filePath}`, { env: process.env }).toString())
   } catch (error) {
     const output = error.stdout.toString()
-    console.log(output)
     // Debug mode triggered by NPM_TOKEN=debug
     expect(output).toContain('Running in debug mode')
     // debug() statements printed because ACTIONS_RUNNER_DEBUG=true
