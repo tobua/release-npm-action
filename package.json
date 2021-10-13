@@ -8,7 +8,7 @@
   "author": "Matthias Giger",
   "scripts": {
     "lint": "eslint .",
-    "build": "esbuild index.js --bundle --platform=node --outfile=dist/index.cjs --sourcemap --external:standard-version --external:node-fetch --external:@actions/core --external:@actions/github",
+    "build": "esbuild index.js --bundle --platform=node --outfile=dist/bundle/index.cjs --sourcemap",
     "test": "jest",
     "release": "npx standard-version"
   },
