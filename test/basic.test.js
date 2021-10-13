@@ -10,7 +10,7 @@ test('package: gets package contents.', () => {
 
   expect(error).toBeUndefined()
   expect(name).toBe('release-npm-action')
-  expect(scripts.build).toContain('ncc build')
+  expect(scripts.build).toContain('esbuild')
 })
 
 test('release: identifies release from latest commit.', () => {
