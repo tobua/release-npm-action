@@ -16,7 +16,7 @@
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@actions/github": "^5.0.0",
-    "node-fetch": "^3.0.0",
+    "node-fetch": "cjs",
     "standard-version": "^9.3.1"
   },
   "type": "module",
