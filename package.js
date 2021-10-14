@@ -32,5 +32,5 @@ export const addPackageProperties = (newProperties) => {
 
   const newContents = { ...existingContents, ...newProperties }
 
-  writeFileSync(packageJsonPath, JSON.stringify(newContents))
+  writeFileSync(packageJsonPath, JSON.stringify(newContents, null, 2))
 }
