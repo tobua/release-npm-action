@@ -7,13 +7,13 @@
   "author": "Matthias Giger",
   "scripts": {
     "lint": "eslint .",
-    "build": "esbuild index.js --bundle --platform=node --outfile=dist/index.cjs --sourcemap --external:standard-version --external:node-fetch --external:@actions/core --external:@actions/github && npm install --no-package-lock --prefix dist",
+    "build": "esbuild index.js --bundle --platform=node --outfile=dist/index.cjs --sourcemap --external:standard-version && npm install --no-package-lock --prefix dist",
     "test": "jest"
   },
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@actions/github": "^5.0.0",
-    "node-fetch": "cjs",
+    "node-fetch": "^3.0.0",
     "standard-version": "^9.3.1"
   },
   "type": "module",
