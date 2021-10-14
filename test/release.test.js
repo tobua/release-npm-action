@@ -1,4 +1,6 @@
+import { join } from 'path'
 import { readFileSync, writeFileSync } from 'fs'
+import { execSync } from 'child_process'
 import { createRelease } from '../release.js'
 import { getPackageJsonPath } from '../package.js'
 import { publish } from '../publish.js'
@@ -76,4 +78,24 @@ test('Creates release tags with different configurations.', async () => {
 test('Successfully publishes to npm.', () => {
   // Dry run to verify published contents.
   publish(true)
+})
+
+// shows how the runner will run a javascript action with env / stdout protocol
+test('full: attempts to perform a release but fails.', () => {
+  process.env['INPUT_NPM_TOKEN'] = 'debug'
+  process.env['ACTIONS_RUNNER_DEBUG'] = true
+
+  const filePath = join(process.cwd(), 'index.js')
+
+  try {
+    console.log(execSync(`node ${filePath}`, { env: process.env }).toString())
+  } catch (error) {
+    const output = error.stdout.toString()
+    // Debug mode triggered by NPM_TOKEN=debug
+    expect(output).toContain('Running in debug mode')
+    // debug() statements printed because ACTIONS_RUNNER_DEBUG=true
+    expect(output).toContain('::debug::')
+    // action itself will not be published to npm
+    expect(output).toContain('Publishing release-npm-action as first release.')
+  }
 })

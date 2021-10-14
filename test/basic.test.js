@@ -1,6 +1,4 @@
-import path from 'path'
 import pacote from 'pacote'
-import { execSync } from 'child_process'
 import { getPackage } from '../package.js'
 import { getRelease } from '../release.js'
 import { getVersion } from '../version.js'
@@ -37,24 +35,4 @@ test('version: tries to get the version from npm.', async () => {
 
   expect(debugData.first).toBe(false)
   expect(debugData.version).toBe(manifest.version)
-})
-
-// shows how the runner will run a javascript action with env / stdout protocol
-test('full: attempts to perform a release but fails.', () => {
-  process.env['INPUT_NPM_TOKEN'] = 'debug'
-  process.env['ACTIONS_RUNNER_DEBUG'] = true
-
-  const filePath = path.join(process.cwd(), 'index.js')
-
-  try {
-    console.log(execSync(`node ${filePath}`, { env: process.env }).toString())
-  } catch (error) {
-    const output = error.stdout.toString()
-    // Debug mode triggered by NPM_TOKEN=debug
-    expect(output).toContain('Running in debug mode')
-    // debug() statements printed because ACTIONS_RUNNER_DEBUG=true
-    expect(output).toContain('::debug::')
-    // action itself will not be published to npm
-    expect(output).toContain('Publishing release-npm-action as first release.')
-  }
 })
