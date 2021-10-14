@@ -13873,6 +13873,10 @@ var createRelease = async (version, first, major) => {
     version = "0.0.0";
   }
   addPackageProperties({ version });
+  const username = process.env.GITHUB_ACTOR;
+  const email = `${process.env.GITHUB_ACTOR}@users.noreply.github.com`;
+  (0, import_core2.info)(`git config --global user.name "${username}"`);
+  (0, import_child_process.execSync)(`git config --global user.name "${username}" && git config --global user.email "${email}"`);
   await (0, import_standard_version.default)({
     dryRun: debugMode,
     skip: {

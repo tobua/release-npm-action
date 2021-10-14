@@ -27,6 +27,15 @@ export const createRelease = async (version, first, major) => {
   // Add version to be picked up by standard-version.
   addPackageProperties({ version })
 
+  const username = process.env.GITHUB_ACTOR
+  const email = `${process.env.GITHUB_ACTOR}@users.noreply.github.com`
+
+  info(`git config --global user.name "${username}"`)
+
+  execSync(
+    `git config --global user.name "${username}" && git config --global user.email "${email}"`
+  )
+
   await standardVersion({
     dryRun: debugMode,
     skip: {
