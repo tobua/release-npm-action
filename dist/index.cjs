@@ -10261,7 +10261,7 @@ var createRelease = async (version, first, major) => {
   (0, import_child_process.execSync)("git push --follow-tags");
   let tagName = `v${version}`;
   if (!debugMode) {
-    tagName = (0, import_child_process.execSync)("git describe HEAD --abbrev=0");
+    tagName = (0, import_child_process.execSync)("git describe HEAD --abbrev=0").toString();
     (0, import_core2.info)(`Pushed release tag ${tagName}.`);
   }
   (0, import_core2.debug)(`version: ${version} tagName: ${tagName}`);
@@ -10274,9 +10274,9 @@ var createRelease = async (version, first, major) => {
   if (debugMode) {
     return;
   }
+  let changeLogBody = "Missing CHANGELOG.md";
   if ((0, import_fs2.existsSync)((0, import_path2.join)(process.cwd(), "CHANGELOG.md"))) {
-    (0, import_core2.info)("has changelog");
-    (0, import_core2.info)((0, import_fs2.readFileSync)((0, import_path2.join)(process.cwd(), "CHANGELOG.md"), "utf-8"));
+    changeLogBody = (0, import_fs2.readFileSync)((0, import_path2.join)(process.cwd(), "CHANGELOG.md"), "utf-8");
   }
   const octokit = new import_github.getOctokit((0, import_core2.getInput)("GITHUB_TOKEN"));
   const createReleaseResponse = await octokit.rest.repos.createRelease({
@@ -10284,7 +10284,7 @@ var createRelease = async (version, first, major) => {
     repo: import_github.context.repo.repo,
     tag_name: tagName,
     name: tagName,
-    body: "body"
+    body: changeLogBody
   });
   const {
     data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl }

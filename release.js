@@ -63,7 +63,7 @@ export const createRelease = async (version, first, major) => {
   let tagName = `v${version}`
 
   if (!debugMode) {
-    tagName = execSync('git describe HEAD --abbrev=0')
+    tagName = execSync('git describe HEAD --abbrev=0').toString()
 
     info(`Pushed release tag ${tagName}.`)
   }
@@ -82,9 +82,10 @@ export const createRelease = async (version, first, major) => {
     return
   }
 
+  let changeLogBody = 'Missing CHANGELOG.md'
+
   if (existsSync(join(process.cwd(), 'CHANGELOG.md'))) {
-    info('has changelog')
-    info(readFileSync(join(process.cwd(), 'CHANGELOG.md'), 'utf-8'))
+    changeLogBody = readFileSync(join(process.cwd(), 'CHANGELOG.md'), 'utf-8')
   }
 
   const octokit = new getOctokit(getInput('GITHUB_TOKEN'))
@@ -94,8 +95,7 @@ export const createRelease = async (version, first, major) => {
     repo: context.repo.repo,
     tag_name: tagName,
     name: tagName,
-    // TODO Read body from CHANGELOG.md created when not in dry run mode.
-    body: 'body',
+    body: changeLogBody,
   })
 
   const {
