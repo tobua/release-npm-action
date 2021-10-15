@@ -10218,6 +10218,8 @@ var addPackageProperties = (newProperties) => {
 };
 
 // release.js
+var import_fs2 = __toModule(require("fs"));
+var import_path2 = __toModule(require("path"));
 var import_child_process = __toModule(require("child_process"));
 var import_core2 = __toModule(require_core());
 var import_github = __toModule(require_github());
@@ -10258,15 +10260,19 @@ var createRelease = async (version, first, major) => {
   }
   (0, import_core2.debug)(`version: ${version} tagName: ${tagName}`);
   if ((0, import_core2.getInput)("GITHUB_TOKEN")) {
-    (0, import_core2.debug)("has github input");
+    (0, import_core2.info)("has github input");
   }
   if (process.env.GITHUB_TOKEN) {
-    (0, import_core2.debug)("has github token");
+    (0, import_core2.info)("has github token");
   }
   if (debugMode) {
     return;
   }
-  const github = new import_github.getOctokit(process.env.GITHUB_TOKEN);
+  if ((0, import_fs2.existsSync)((0, import_path2.join)(process.cwd(), "CHANGELOG.md"))) {
+    (0, import_core2.info)("has changelog");
+    (0, import_core2.info)((0, import_fs2.readFileSync)((0, import_path2.join)(process.cwd(), "CHANGELOG.md"), "utf-8"));
+  }
+  const github = new import_github.getOctokit((0, import_core2.getInput)("GITHUB_TOKEN"));
   const createReleaseResponse = await github.repos.createRelease({
     owner: import_github.context.repo.owner,
     repo: import_github.context.repo.repo,
