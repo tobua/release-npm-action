@@ -1,6 +1,6 @@
 {
   "name": "release-npm-action",
-  "description": "Verifies, builds, versions and documents a plugin release to npm.",
+  "description": "Verifies, versions and documents a plugin release to npm.",
   "repository": "github:tobua/release-npm-action",
   "homepage": "https://github.com/marketplace/actions/release-npm-action",
   "license": "MIT",
