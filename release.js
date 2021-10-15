@@ -1,3 +1,5 @@
+import { existsSync, readFileSync } from 'fs'
+import { join } from 'path'
 import { execSync } from 'child_process'
 import { info, debug, getInput } from '@actions/core'
 import { context, getOctokit } from '@actions/github'
@@ -59,18 +61,23 @@ export const createRelease = async (version, first, major) => {
   debug(`version: ${version} tagName: ${tagName}`)
 
   if (getInput('GITHUB_TOKEN')) {
-    debug('has github input')
+    info('has github input')
   }
 
   if (process.env.GITHUB_TOKEN) {
-    debug('has github token')
+    info('has github token')
   }
 
   if (debugMode) {
     return
   }
 
-  const github = new getOctokit(process.env.GITHUB_TOKEN)
+  if (existsSync(join(process.cwd(), 'CHANGELOG.md'))) {
+    info('has changelog')
+    info(readFileSync(join(process.cwd(), 'CHANGELOG.md'), 'utf-8'))
+  }
+
+  const github = new getOctokit(getInput('GITHUB_TOKEN'))
 
   const createReleaseResponse = await github.repos.createRelease({
     owner: context.repo.owner,
