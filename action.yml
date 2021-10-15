@@ -7,6 +7,9 @@ inputs:
   GITHUB_TOKEN:
     description: 'Used to create GitHub release with changelog contents.'
     required: false
+  type:
+    description: 'Optional release type for manually triggering release workflow.',
+    required: false
 runs:
   # max available node version, see https://github.com/actions/runner/issues/772
   using: 'node12'

@@ -10227,8 +10227,14 @@ var import_standard_version = __toModule(require("standard-version"));
 var getRelease = (debugMode) => {
   const commitMessage = (0, import_child_process.execSync)("git log -1 --pretty=%B").toString();
   (0, import_core2.info)(`commitMessage ${commitMessage}`);
-  const release = commitMessage.includes("release-npm");
-  const major = commitMessage.includes("release-npm major");
+  let release = commitMessage.includes("release-npm");
+  let major = commitMessage.includes("release-npm major");
+  (0, import_core2.info)(`release type input: ${(0, import_core2.getInput)("type")}`);
+  const manualTriggerType = (0, import_core2.getInput)("type");
+  if (manualTriggerType === "regular" || manualTriggerType === "major") {
+    release = true;
+    major = manualTriggerType === "major" ? true : false;
+  }
   return {
     release: debugMode || release,
     major
@@ -10272,8 +10278,8 @@ var createRelease = async (version, first, major) => {
     (0, import_core2.info)("has changelog");
     (0, import_core2.info)((0, import_fs2.readFileSync)((0, import_path2.join)(process.cwd(), "CHANGELOG.md"), "utf-8"));
   }
-  const github = new import_github.getOctokit((0, import_core2.getInput)("GITHUB_TOKEN"));
-  const createReleaseResponse = await github.repos.createRelease({
+  const octokit = new import_github.getOctokit((0, import_core2.getInput)("GITHUB_TOKEN"));
+  const createReleaseResponse = await octokit.rest.repos.createRelease({
     owner: import_github.context.repo.owner,
     repo: import_github.context.repo.repo,
     tag_name: tagName,

@@ -10,8 +10,18 @@ export const getRelease = (debugMode) => {
   // Get body of latest commit.
   const commitMessage = execSync('git log -1 --pretty=%B').toString()
   info(`commitMessage ${commitMessage}`)
-  const release = commitMessage.includes('release-npm')
-  const major = commitMessage.includes('release-npm major')
+  let release = commitMessage.includes('release-npm')
+  let major = commitMessage.includes('release-npm major')
+
+  info(`release type input: ${getInput('type')}`)
+
+  const manualTriggerType = getInput('type')
+
+  // Manual trigger will override last commit information.
+  if (manualTriggerType === 'regular' || manualTriggerType === 'major') {
+    release = true
+    major = manualTriggerType === 'major' ? true : false
+  }
 
   return {
     release: debugMode || release, // TODO true for debugging purposes.
@@ -77,9 +87,9 @@ export const createRelease = async (version, first, major) => {
     info(readFileSync(join(process.cwd(), 'CHANGELOG.md'), 'utf-8'))
   }
 
-  const github = new getOctokit(getInput('GITHUB_TOKEN'))
+  const octokit = new getOctokit(getInput('GITHUB_TOKEN'))
 
-  const createReleaseResponse = await github.repos.createRelease({
+  const createReleaseResponse = await octokit.rest.repos.createRelease({
     owner: context.repo.owner,
     repo: context.repo.repo,
     tag_name: tagName,
