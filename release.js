@@ -63,20 +63,13 @@ export const createRelease = async (version, first, major) => {
   let tagName = `v${version}`
 
   if (!debugMode) {
-    tagName = execSync('git describe HEAD --abbrev=0').toString()
+    // NOTE contains newline from command removed with trim().
+    tagName = execSync('git describe HEAD --abbrev=0').toString().trim()
 
     info(`Pushed release tag ${tagName}.`)
   }
 
   debug(`version: ${version} tagName: ${tagName}`)
-
-  if (getInput('GITHUB_TOKEN')) {
-    info('has github input')
-  }
-
-  if (process.env.GITHUB_TOKEN) {
-    info('has github token')
-  }
 
   if (debugMode) {
     return

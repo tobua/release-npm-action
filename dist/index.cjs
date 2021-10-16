@@ -10261,16 +10261,10 @@ var createRelease = async (version, first, major) => {
   (0, import_child_process.execSync)("git push --follow-tags");
   let tagName = `v${version}`;
   if (!debugMode) {
-    tagName = (0, import_child_process.execSync)("git describe HEAD --abbrev=0").toString();
+    tagName = (0, import_child_process.execSync)("git describe HEAD --abbrev=0").toString().trim();
     (0, import_core2.info)(`Pushed release tag ${tagName}.`);
   }
   (0, import_core2.debug)(`version: ${version} tagName: ${tagName}`);
-  if ((0, import_core2.getInput)("GITHUB_TOKEN")) {
-    (0, import_core2.info)("has github input");
-  }
-  if (process.env.GITHUB_TOKEN) {
-    (0, import_core2.info)("has github token");
-  }
   if (debugMode) {
     return;
   }

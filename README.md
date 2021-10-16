@@ -78,4 +78,16 @@ on:
         description: Regular or major release?
         default: regular
         required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      # ...
+      - uses: tobua/release-npm-action@v0
+        with:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Hand over manual input type.
+          type: ${{ github.event.inputs.type }}
 ```
