@@ -106,6 +106,7 @@ The following options can be passed to the action.
 | GITHUB_TOKEN   | string    | true     | GitHub token automatically created by GitHub.              |
 | MANUAL_TRIGGER | 'regular' | false    | Manually trigger a release even without commit annotation. |
 | CHANNEL        | string    | false    | dist-tag to publish the npm release on, default latest.    |
+| DRY_RUN        | true      | false    | Release in dry mode (no publish).                          |
 
 ## Caveats
 

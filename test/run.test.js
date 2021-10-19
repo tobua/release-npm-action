@@ -4,6 +4,7 @@ import { execSync } from 'child_process'
 // shows how the runner will run a javascript action with env / stdout protocol
 test('full: attempts to perform a release but fails.', () => {
   process.env['INPUT_NPM_TOKEN'] = 'debug'
+  process.env['INPUT_DRY_RUN'] = 'true'
 
   const filePath = join(process.cwd(), 'index.js')
 
@@ -15,5 +16,6 @@ test('full: attempts to perform a release but fails.', () => {
     expect(output).toContain('Running in debug mode')
     // action itself will not be published to npm
     expect(output).toContain('Release requested.')
+    expect(output).toContain('Skipping release in debug mode.')
   }
 })

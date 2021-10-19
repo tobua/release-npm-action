@@ -27,7 +27,7 @@ const run = async () => {
 
     info('Release requested.')
 
-    await createRelease()
+    await createRelease(debugMode)
   } catch (error) {
     setFailed(error.message)
   }

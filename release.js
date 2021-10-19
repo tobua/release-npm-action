@@ -22,23 +22,29 @@ export const getRelease = (debugMode) => {
   }
 }
 
-export const createRelease = async () => {
-  const debugMode = !getInput('NPM_TOKEN') || getInput('NPM_TOKEN') === 'debug'
+export const createRelease = async (debugMode) => {
   const currentBranch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
   const branchConfiguration = { name: currentBranch }
+  const dryRun = getInput('DRY_RUN') === 'true'
+  const channelInput = getInput('CHANNEL')
 
-  if (getInput('CHANNEL')) {
-    branchConfiguration.channel = getInput('CHANNEL')
+  if (channelInput) {
+    branchConfiguration.channel = channelInput
   }
 
-  info(`current branch: ${currentBranch}, channel: ${getInput('CHANNEL')}.`)
+  info(`current branch: ${currentBranch}, channel: ${channelInput}.`)
   info(`author ${getInput('GIT_AUTHOR_NAME')}, ${getInput('GIT_COMMITTER_NAME')}.`)
+  info(`dry run: ${getInput('DRY_RUN')}, ${dryRun}.`)
+
+  if (debugMode) {
+    return info(`Skipping release in debug mode.`)
+  }
 
   const releaseResult = await semanticRelease(
     {
       branches: [branchConfiguration],
-      dryRun: debugMode,
-      debug: debugMode,
+      dryRun: dryRun,
+      debug: dryRun,
     },
     {
       env: {

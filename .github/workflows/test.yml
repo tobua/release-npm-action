@@ -1,10 +1,16 @@
 name: 'test'
 
 on:
-  pull_request:
   push:
     branches:
       - main
+  # Manual trigger through GitHub UI.
+  workflow_dispatch:
+    inputs:
+      manual:
+        description: Manually trigger regular release?
+        default: regular
+        required: true
 
 jobs:
   test:
@@ -13,13 +19,14 @@ jobs:
       - uses: actions/checkout@v2
       - run: npm install
       - run: npm test
-
+  # Test run action in dry mode.
   action:
+    needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - run: npm install
       - uses: ./
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: true
+          MANUAL_TRIGGER: ${{ github.event.inputs.manual }}

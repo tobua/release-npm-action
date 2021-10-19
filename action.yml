@@ -13,6 +13,9 @@ inputs:
   CHANNEL:
     description: 'The npm dist-tag for the release, default latest.'
     required: false
+  DRY_RUN:
+    description: 'Run action for testing puroposes without publishing anything.'
+    required: false
 runs:
   # max available node version, see https://github.com/actions/runner/issues/772
   using: 'node12'

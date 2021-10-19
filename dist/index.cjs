@@ -51698,19 +51698,24 @@ var getRelease = (debugMode) => {
     release: debugMode || release
   };
 };
-var createRelease = async () => {
-  const debugMode = !(0, import_core.getInput)("NPM_TOKEN") || (0, import_core.getInput)("NPM_TOKEN") === "debug";
+var createRelease = async (debugMode) => {
   const currentBranch = (0, import_child_process.execSync)("git rev-parse --abbrev-ref HEAD").toString().trim();
   const branchConfiguration = { name: currentBranch };
-  if ((0, import_core.getInput)("CHANNEL")) {
-    branchConfiguration.channel = (0, import_core.getInput)("CHANNEL");
+  const dryRun = (0, import_core.getInput)("DRY_RUN") === "true";
+  const channelInput = (0, import_core.getInput)("CHANNEL");
+  if (channelInput) {
+    branchConfiguration.channel = channelInput;
   }
-  (0, import_core.info)(`current branch: ${currentBranch}, channel: ${(0, import_core.getInput)("CHANNEL")}.`);
+  (0, import_core.info)(`current branch: ${currentBranch}, channel: ${channelInput}.`);
   (0, import_core.info)(`author ${(0, import_core.getInput)("GIT_AUTHOR_NAME")}, ${(0, import_core.getInput)("GIT_COMMITTER_NAME")}.`);
+  (0, import_core.info)(`dry run: ${(0, import_core.getInput)("DRY_RUN")}, ${dryRun}.`);
+  if (debugMode) {
+    return (0, import_core.info)(`Skipping release in debug mode.`);
+  }
   const releaseResult = await (0, import_semantic_release.default)({
     branches: [branchConfiguration],
-    dryRun: debugMode,
-    debug: debugMode
+    dryRun,
+    debug: dryRun
   }, {
     env: {
       ...process.env,
@@ -51747,7 +51752,7 @@ var run = async () => {
       return (0, import_core2.info)("No release requested.");
     }
     (0, import_core2.info)("Release requested.");
-    await createRelease();
+    await createRelease(debugMode);
   } catch (error) {
     (0, import_core2.setFailed)(error.message);
   }
