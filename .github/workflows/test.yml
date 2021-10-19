@@ -4,13 +4,6 @@ on:
   push:
     branches:
       - main
-  # Manual trigger through GitHub UI.
-  workflow_dispatch:
-    inputs:
-      manual:
-        description: Manually trigger regular release?
-        default: regular
-        required: true
 
 jobs:
   test:
@@ -29,5 +22,6 @@ jobs:
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Manually trigger a dry run to see if action would work.
           DRY_RUN: true
-          MANUAL_TRIGGER: ${{ github.event.inputs.manual }}
+          MANUAL_TRIGGER: regular
