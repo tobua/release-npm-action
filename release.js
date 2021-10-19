@@ -1,99 +1,65 @@
-import { existsSync, readFileSync } from 'fs'
-import { join } from 'path'
 import { execSync } from 'child_process'
-import { info, debug, getInput } from '@actions/core'
-import { context, getOctokit } from '@actions/github'
-import standardVersion from 'standard-version'
-import { addPackageProperties } from './package.js'
+import { info, getInput, setFailed } from '@actions/core'
+import semanticRelease from 'semantic-release'
 
 export const getRelease = (debugMode) => {
   // Get body of latest commit.
   const commitMessage = execSync('git log -1 --pretty=%B').toString()
-  info(`commitMessage ${commitMessage}`)
   let release = commitMessage.includes('release-npm')
-  let major = commitMessage.includes('release-npm major')
 
-  info(`release type input: ${getInput('type')}`)
+  info(`commitMessage ${commitMessage}`)
+  info(`release type input: ${getInput('MANUAL_TRIGGER')}`)
 
-  const manualTriggerType = getInput('type')
+  const manualTriggerType = getInput('MANUAL_TRIGGER')
 
   // Manual trigger will override last commit information.
-  if (manualTriggerType === 'regular' || manualTriggerType === 'major') {
+  if (manualTriggerType === 'regular') {
     release = true
-    major = manualTriggerType === 'major' ? true : false
   }
 
   return {
     release: debugMode || release, // TODO true for debugging purposes.
-    major,
   }
 }
 
-export const createRelease = async (version, first, major) => {
+export const createRelease = async () => {
   const debugMode = !getInput('NPM_TOKEN') || getInput('NPM_TOKEN') === 'debug'
+  const currentBranch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
+  const branchConfiguration = { name: currentBranch }
 
-  if (first && !version) {
-    version = '0.0.0'
+  if (getInput('CHANNEL')) {
+    branchConfiguration.channel = getInput('CHANNEL')
   }
 
-  // Add version to be picked up by standard-version.
-  addPackageProperties({ version })
+  info(`current branch: ${currentBranch}, channel: ${getInput('CHANNEL')}.`)
+  info(`author ${getInput('GIT_AUTHOR_NAME')}, ${getInput('GIT_COMMITTER_NAME')}.`)
 
-  const username = process.env.GITHUB_ACTOR
-  const email = `${process.env.GITHUB_ACTOR}@users.noreply.github.com`
-
-  info(`git config --global user.name "${username}"`)
-
-  execSync(
-    `git config --global user.name "${username}" && git config --global user.email "${email}"`
+  const releaseResult = await semanticRelease(
+    {
+      branches: [branchConfiguration],
+      dryRun: debugMode,
+      debug: debugMode,
+    },
+    {
+      env: {
+        ...process.env,
+        GITHUB_TOKEN: getInput('GITHUB_TOKEN'),
+        NPM_TOKEN: getInput('NPM_TOKEN'),
+        // process.env.GITHUB_ACTOR is available.
+        GIT_AUTHOR_NAME: getInput('GIT_AUTHOR_NAME'),
+        GIT_AUTHOR_EMAIL: getInput('GIT_AUTHOR_EMAIL'),
+        GIT_COMMITTER_NAME: getInput('GIT_COMMITTER_NAME'),
+        GIT_COMMITTER_EMAIL: getInput('GIT_COMMITTER_EMAIL'),
+      },
+    }
   )
 
-  await standardVersion({
-    dryRun: debugMode,
-    skip: {
-      // Don't create a commit, as version not persisted and changelog in github releases.
-      commit: true,
-    },
-    firstRelease: first,
-    releaseAs: major ? 'major' : undefined,
-  })
-
-  execSync('git push --follow-tags')
-
-  let tagName = `v${version}`
-
-  if (!debugMode) {
-    // NOTE contains newline from command removed with trim().
-    tagName = execSync('git describe HEAD --abbrev=0').toString().trim()
-
-    info(`Pushed release tag ${tagName}.`)
+  if (!releaseResult) {
+    return setFailed('Failed to create or publish release.')
   }
 
-  debug(`version: ${version} tagName: ${tagName}`)
+  const { nextRelease } = releaseResult
+  const { version, gitTag, channel } = nextRelease
 
-  if (debugMode) {
-    return
-  }
-
-  let changeLogBody = 'Missing CHANGELOG.md'
-
-  if (existsSync(join(process.cwd(), 'CHANGELOG.md'))) {
-    changeLogBody = readFileSync(join(process.cwd(), 'CHANGELOG.md'), 'utf-8')
-  }
-
-  const octokit = new getOctokit(getInput('GITHUB_TOKEN'))
-
-  const createReleaseResponse = await octokit.rest.repos.createRelease({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    tag_name: tagName,
-    name: tagName,
-    body: changeLogBody,
-  })
-
-  const {
-    data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl },
-  } = createReleaseResponse
-
-  info(`Release created ${releaseId} url: ${htmlUrl} upload: ${uploadUrl}.`)
+  info(`Released version ${version} in ${channel} channel with ${gitTag} tag.`)
 }

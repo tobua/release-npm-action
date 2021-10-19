@@ -1,20 +1,18 @@
 {
   "name": "release-npm-action",
-  "description": "Verifies, versions and documents a plugin release to npm.",
+  "description": "GitHub action to version and document a plugin release to npm.",
   "repository": "github:tobua/release-npm-action",
   "homepage": "https://github.com/marketplace/actions/release-npm-action",
   "license": "MIT",
   "author": "Matthias Giger",
   "scripts": {
     "lint": "eslint .",
-    "build": "esbuild index.js --bundle --platform=node --outfile=dist/index.cjs --sourcemap --external:standard-version && npm install --no-package-lock --prefix dist",
+    "build": "esbuild index.js --bundle --platform=node --outfile=dist/index.cjs --sourcemap",
     "test": "jest"
   },
   "dependencies": {
     "@actions/core": "^1.6.0",
-    "@actions/github": "^5.0.0",
-    "node-fetch": "cjs",
-    "standard-version": "^9.3.1"
+    "semantic-release": "^18.0.0"
   },
   "type": "module",
   "files": [
@@ -31,10 +29,9 @@
   ],
   "devDependencies": {
     "@babel/preset-env": "^7.15.8",
-    "esbuild": "^0.13.7",
+    "esbuild": "^0.13.8",
     "eslint": "^8.0.1",
-    "jest": "^27.2.5",
-    "pacote": "^12.0.2",
+    "jest": "^27.3.1",
     "prettier": "^2.4.1"
   },
   "prettier": {

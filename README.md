@@ -1,11 +1,17 @@
+<p align="center">
+  <img src="https://github.com/tobua/release-npm-action/raw/main/logo.png" alt="release-npm-action">
+</p>
+
 # release-npm-action
 
-Verifies, versions and documents a plugin release to npm.
+GitHub action to version and document a plugin release to npm using [semantic-release](https://github.com/semantic-release/semantic-release).
 
-- Creates GitHub release with body from `CHANGELOG.md`
-- Tags and publishes release to npm
-- No version and changelog commits made
-- No versioning in `package.json` required
+- Creates tag for current version.
+- GitHub release for tag with release notes based on commit messages.
+- Publishes release to npm.
+- No additional commits made.
+- No version required in `package.json`.
+- Release triggered through commit annotation.
 
 ## Usage
 
@@ -74,8 +80,8 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
-      type:
-        description: Regular or major release?
+      manual:
+        description: Manually trigger regular release?
         default: regular
         required: true
 
@@ -88,6 +94,21 @@ jobs:
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Hand over manual input type.
-          type: ${{ github.event.inputs.type }}
+          # Hand over manual input trigger.
+          MANUAL_TRIGGER: ${{ github.event.inputs.manual }}
 ```
+
+## Options
+
+The following options can be passed to the action.
+
+| Option         | Values    | Required | Description                                                |
+| -------------- | --------- | -------- | ---------------------------------------------------------- |
+| NPM_TOKEN      | string    | true     | npm Automation or Publishing token.                        |
+| GITHUB_TOKEN   | string    | true     | GitHub token automatically created by GitHub.              |
+| MANUAL_TRIGGER | 'regular' | false    | Manually trigger a release even without commit annotation. |
+| CHANNEL        | string    | false    | dist-tag to publish the npm release on, default latest.    |
+
+## Caveats
+
+The first version for a plugin release defaults to `1.0.0` and cannot be changed. The next version is based on the commit history since the latest release and cannot be changed.

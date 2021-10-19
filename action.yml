@@ -7,8 +7,11 @@ inputs:
   GITHUB_TOKEN:
     description: 'Used to create GitHub release with changelog contents.'
     required: false
-  type:
+  MANUAL_TRIGGER:
     description: 'Optional release type for manually triggering release workflow.'
+    required: false
+  CHANNEL:
+    description: 'The npm dist-tag for the release, default latest.',
     required: false
 runs:
   # max available node version, see https://github.com/actions/runner/issues/772
