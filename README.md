@@ -1,8 +1,6 @@
-<p align="center">
-  <img src="https://github.com/tobua/release-npm-action/raw/main/logo.png" alt="release-npm-action">
-</p>
-
 # release-npm-action
+
+<img align="right" src="https://github.com/tobua/release-npm-action/raw/main/logo.png" width="20%" alt="release-npm-action" />
 
 GitHub action to version and document a plugin release to npm using [semantic-release](https://github.com/semantic-release/semantic-release).
 
