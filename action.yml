@@ -17,6 +17,7 @@ inputs:
     description: 'Run action for testing puroposes without publishing anything.'
     required: false
 runs:
-  # max available node version, see https://github.com/actions/runner/issues/772
+  # Action will run with latest node LTS, entry loaded with require() therefore no ESM compatibility.
+  # See also https://github.com/actions/runner/issues/772.
   using: 'node12'
-  main: 'dist/index.mjs'
+  main: 'dist/index.js'

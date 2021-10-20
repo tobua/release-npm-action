@@ -17,7 +17,7 @@ GitHub action to version and document a plugin release to npm using [semantic-re
 Add steps to build and test before the release as usual.
 
 ```yaml
-name: push
+name: release
 
 # Runs always on commits, will only release when requested, see below.
 on:
@@ -26,19 +26,14 @@ on:
 
 jobs:
   test:
-    # regular test step
-  build:
-    # build if necessary
+    # test step if necessary
   release:
-    # needs: [test, build]
+    # needs: [test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-          check-latest: true
-      - uses: tobua/release-npm-action@v0
+      # run build if necessary
+      - uses: tobua/release-npm-action@v1
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -48,7 +43,7 @@ jobs:
 
 ### `release-npm` in Commit Body
 
-To request the next commit to be released if the pipeline passes add a remark to the commit body.
+To request the next commit to be released if the pipeline passes add a remark to the commit message.
 
 ```
 feat(component): implement swipe and dot functionality for Intro
@@ -56,19 +51,17 @@ feat(component): implement swipe and dot functionality for Intro
 release-npm
 ```
 
-If a `release-npm` token is found in the body a release will be triggered. Use `npm-release major` to force a major release. Patch, minor or major release type will otherwise be decided based on the commit history using `standard-version`.
+If a `release-npm` token is found in the body a release will be triggered. Patch, minor or major release type will be decided based on the commit history.
 
 ```
-fix(component): improve swipe behavior
-
-This animates swipe between slides (release-npm major).
+fix(component): improve swipe behavior [release-npm]
 ```
+
+The annotation can be placed anywhere in the commit message.
 
 ### Manually Triggered Workflow
 
-Alternatively, you can manually trigger the release workflow action to create a release even without annotated commits. This requires the action to run on the `workflow_dispatch` trigger. When that is added a workflow can be triggered from the GitHub workflow UI for this action.
-
-The UI will prompt for the type of release, either `regular` or `major` to force a major release.
+Alternatively, a release can be manually triggered without annotated commits. This requires the action to run on the `workflow_dispatch` trigger. When that is added a workflow can be triggered from the GitHub workflow UI for this action. The UI dialogue will prompt for an input which is set to 'regular' by default and when submitted with this value will trigger a manual release.
 
 ```yaml
 name: push
@@ -111,4 +104,4 @@ The following options can be passed to the action.
 
 ## Caveats
 
-The first version for a plugin release defaults to `1.0.0` and cannot be changed. The next version is based on the commit history since the latest release and cannot be changed.
+The first version for a plugin release defaults to `1.0.0` and cannot be changed. The next version is based on the commit history since the latest release and also cannot be changed.
