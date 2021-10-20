@@ -1,24 +1,27 @@
 import { execSync } from 'child_process'
 import { info, getInput, setFailed } from '@actions/core'
 import semanticRelease from 'semantic-release'
+import { WritableStreamBuffer } from 'stream-buffers'
 
 export const getRelease = (debugMode) => {
-  // Get body of latest commit.
   const commitMessage = execSync('git log -1 --pretty=%B').toString()
   let release = commitMessage.includes('release-npm')
+  let type = 'Release requested through commit annotation.'
 
-  info(`commitMessage ${commitMessage}`)
-  info(`release type input: ${getInput('MANUAL_TRIGGER')}`)
-
-  const manualTriggerType = getInput('MANUAL_TRIGGER')
-
-  // Manual trigger will override last commit information.
-  if (manualTriggerType === 'regular') {
+  // Manual trigger precedes last commit information.
+  if (getInput('MANUAL_TRIGGER') === 'regular') {
     release = true
+    type = 'Release requested through manual workflow run.'
+  }
+
+  if (debugMode) {
+    release = true
+    type = 'Release requested through debug mode.'
   }
 
   return {
-    release: debugMode || release, // TODO true for debugging purposes.
+    release,
+    type,
   }
 }
 
@@ -32,40 +35,62 @@ export const createRelease = async (debugMode) => {
     branchConfiguration.channel = channelInput
   }
 
-  info(`current branch: ${currentBranch}, channel: ${channelInput}.`)
-  info(`author ${getInput('GIT_AUTHOR_NAME')}, ${getInput('GIT_COMMITTER_NAME')}.`)
-  info(`dry run: ${getInput('DRY_RUN')}, ${dryRun}.`)
+  if (channelInput) {
+    info(`Release channel ${channelInput}.`)
+  }
 
   if (debugMode) {
     return info(`Skipping release in debug mode.`)
   }
 
-  const releaseResult = await semanticRelease(
-    {
-      branches: [branchConfiguration],
-      dryRun: dryRun,
-      debug: dryRun,
-    },
-    {
-      env: {
-        ...process.env,
-        GITHUB_TOKEN: getInput('GITHUB_TOKEN'),
-        NPM_TOKEN: getInput('NPM_TOKEN'),
-        // process.env.GITHUB_ACTOR is available.
-        GIT_AUTHOR_NAME: getInput('GIT_AUTHOR_NAME'),
-        GIT_AUTHOR_EMAIL: getInput('GIT_AUTHOR_EMAIL'),
-        GIT_COMMITTER_NAME: getInput('GIT_COMMITTER_NAME'),
-        GIT_COMMITTER_EMAIL: getInput('GIT_COMMITTER_EMAIL'),
-      },
-    }
-  )
-
-  if (!releaseResult) {
-    return setFailed('Failed to create or publish release.')
+  const env = {
+    ...process.env,
+    GITHUB_TOKEN: getInput('GITHUB_TOKEN'),
+    NPM_TOKEN: getInput('NPM_TOKEN'),
   }
 
-  const { nextRelease } = releaseResult
-  const { version, gitTag, channel } = nextRelease
+  // TODO document
+  const optionalValues = [
+    'GIT_AUTHOR_NAME',
+    'GIT_AUTHOR_EMAIL',
+    'GIT_COMMITTER_NAME',
+    'GIT_COMMITTER_EMAIL',
+  ]
 
-  info(`Released version ${version} in ${channel} channel with ${gitTag} tag.`)
+  optionalValues.forEach((key) => {
+    const value = getInput(key)
+    if (value) {
+      env[key] = value
+    }
+  })
+
+  const logs = WritableStreamBuffer()
+  const errors = WritableStreamBuffer()
+
+  try {
+    const releaseResult = await semanticRelease(
+      {
+        branches: [branchConfiguration],
+        dryRun: dryRun,
+        debug: dryRun,
+      },
+      {
+        env,
+        stdout: logs,
+        stderr: errors,
+      }
+    )
+
+    if (!releaseResult) {
+      info(errors.getContentsAsString('utf8'))
+      return setFailed('Failed to create or publish release.')
+    }
+
+    const { nextRelease } = releaseResult
+    const { version, gitTag, channel } = nextRelease
+
+    info(`Released version ${version} in ${channel} channel with ${gitTag} tag.`)
+  } catch (error) {
+    setFailed(`semantic-release failed with ${error}.`)
+  }
 }

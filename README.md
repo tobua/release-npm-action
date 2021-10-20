@@ -7,9 +7,10 @@ GitHub action to version and document a plugin release to npm using [semantic-re
 - Creates tag for current version.
 - GitHub release for tag with release notes based on commit messages.
 - Publishes release to npm.
+- Release triggered through `release-npm` commit annotation or manual run.
 - No additional commits made.
 - No version required in `package.json`.
-- Release triggered through commit annotation.
+- No project dependencies necessary.
 
 ## Usage
 
