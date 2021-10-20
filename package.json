@@ -12,8 +12,7 @@
   },
   "dependencies": {
     "@actions/core": "^1.6.0",
-    "semantic-release": "^18.0.0",
-    "stream-buffers": "^3.0.2"
+    "semantic-release": "^18.0.0"
   },
   "type": "module",
   "files": [

@@ -1295,192 +1295,15 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
   }
 });
 
-// node_modules/stream-buffers/lib/constants.js
-var require_constants = __commonJS({
-  "node_modules/stream-buffers/lib/constants.js"(exports, module2) {
-    "use strict";
-    module2.exports = {
-      DEFAULT_INITIAL_SIZE: 8 * 1024,
-      DEFAULT_INCREMENT_AMOUNT: 8 * 1024,
-      DEFAULT_FREQUENCY: 1,
-      DEFAULT_CHUNK_SIZE: 1024
-    };
-  }
-});
-
-// node_modules/stream-buffers/lib/readable_streambuffer.js
-var require_readable_streambuffer = __commonJS({
-  "node_modules/stream-buffers/lib/readable_streambuffer.js"(exports, module2) {
-    "use strict";
-    var stream = require("stream");
-    var constants = require_constants();
-    var util = require("util");
-    var ReadableStreamBuffer = module2.exports = function(opts) {
-      var that = this;
-      opts = opts || {};
-      stream.Readable.call(this, opts);
-      this.stopped = false;
-      var frequency = opts.hasOwnProperty("frequency") ? opts.frequency : constants.DEFAULT_FREQUENCY;
-      var chunkSize = opts.chunkSize || constants.DEFAULT_CHUNK_SIZE;
-      var initialSize = opts.initialSize || constants.DEFAULT_INITIAL_SIZE;
-      var incrementAmount = opts.incrementAmount || constants.DEFAULT_INCREMENT_AMOUNT;
-      var size = 0;
-      var buffer = new Buffer(initialSize);
-      var allowPush = false;
-      var sendData = function() {
-        var amount = Math.min(chunkSize, size);
-        var sendMore = false;
-        if (amount > 0) {
-          var chunk = null;
-          chunk = new Buffer(amount);
-          buffer.copy(chunk, 0, 0, amount);
-          sendMore = that.push(chunk) !== false;
-          allowPush = sendMore;
-          buffer.copy(buffer, 0, amount, size);
-          size -= amount;
-        }
-        if (size === 0 && that.stopped) {
-          that.push(null);
-        }
-        if (sendMore) {
-          sendData.timeout = setTimeout(sendData, frequency);
-        } else {
-          sendData.timeout = null;
-        }
-      };
-      this.stop = function() {
-        if (this.stopped) {
-          throw new Error("stop() called on already stopped ReadableStreamBuffer");
-        }
-        this.stopped = true;
-        if (size === 0) {
-          this.push(null);
-        }
-      };
-      this.size = function() {
-        return size;
-      };
-      this.maxSize = function() {
-        return buffer.length;
-      };
-      var increaseBufferIfNecessary = function(incomingDataSize) {
-        if (buffer.length - size < incomingDataSize) {
-          var factor = Math.ceil((incomingDataSize - (buffer.length - size)) / incrementAmount);
-          var newBuffer = new Buffer(buffer.length + incrementAmount * factor);
-          buffer.copy(newBuffer, 0, 0, size);
-          buffer = newBuffer;
-        }
-      };
-      var kickSendDataTask = function() {
-        if (!sendData.timeout && allowPush) {
-          sendData.timeout = setTimeout(sendData, frequency);
-        }
-      };
-      this.put = function(data, encoding) {
-        if (that.stopped) {
-          throw new Error("Tried to write data to a stopped ReadableStreamBuffer");
-        }
-        if (Buffer.isBuffer(data)) {
-          increaseBufferIfNecessary(data.length);
-          data.copy(buffer, size, 0);
-          size += data.length;
-        } else {
-          data = data + "";
-          var dataSizeInBytes = Buffer.byteLength(data);
-          increaseBufferIfNecessary(dataSizeInBytes);
-          buffer.write(data, size, encoding || "utf8");
-          size += dataSizeInBytes;
-        }
-        kickSendDataTask();
-      };
-      this._read = function() {
-        allowPush = true;
-        kickSendDataTask();
-      };
-    };
-    util.inherits(ReadableStreamBuffer, stream.Readable);
-  }
-});
-
-// node_modules/stream-buffers/lib/writable_streambuffer.js
-var require_writable_streambuffer = __commonJS({
-  "node_modules/stream-buffers/lib/writable_streambuffer.js"(exports, module2) {
-    "use strict";
-    var util = require("util");
-    var stream = require("stream");
-    var constants = require_constants();
-    var WritableStreamBuffer2 = module2.exports = function(opts) {
-      opts = opts || {};
-      opts.decodeStrings = true;
-      stream.Writable.call(this, opts);
-      var initialSize = opts.initialSize || constants.DEFAULT_INITIAL_SIZE;
-      var incrementAmount = opts.incrementAmount || constants.DEFAULT_INCREMENT_AMOUNT;
-      var buffer = new Buffer(initialSize);
-      var size = 0;
-      this.size = function() {
-        return size;
-      };
-      this.maxSize = function() {
-        return buffer.length;
-      };
-      this.getContents = function(length) {
-        if (!size)
-          return false;
-        var data = new Buffer(Math.min(length || size, size));
-        buffer.copy(data, 0, 0, data.length);
-        if (data.length < size)
-          buffer.copy(buffer, 0, data.length);
-        size -= data.length;
-        return data;
-      };
-      this.getContentsAsString = function(encoding, length) {
-        if (!size)
-          return false;
-        var data = buffer.toString(encoding || "utf8", 0, Math.min(length || size, size));
-        var dataLength = Buffer.byteLength(data);
-        if (dataLength < size)
-          buffer.copy(buffer, 0, dataLength);
-        size -= dataLength;
-        return data;
-      };
-      var increaseBufferIfNecessary = function(incomingDataSize) {
-        if (buffer.length - size < incomingDataSize) {
-          var factor = Math.ceil((incomingDataSize - (buffer.length - size)) / incrementAmount);
-          var newBuffer = new Buffer(buffer.length + incrementAmount * factor);
-          buffer.copy(newBuffer, 0, 0, size);
-          buffer = newBuffer;
-        }
-      };
-      this._write = function(chunk, encoding, callback) {
-        increaseBufferIfNecessary(chunk.length);
-        chunk.copy(buffer, size, 0);
-        size += chunk.length;
-        callback();
-      };
-    };
-    util.inherits(WritableStreamBuffer2, stream.Writable);
-  }
-});
-
-// node_modules/stream-buffers/lib/streambuffer.js
-var require_streambuffer = __commonJS({
-  "node_modules/stream-buffers/lib/streambuffer.js"(exports, module2) {
-    "use strict";
-    module2.exports = require_constants();
-    module2.exports.ReadableStreamBuffer = require_readable_streambuffer();
-    module2.exports.WritableStreamBuffer = require_writable_streambuffer();
-  }
-});
-
 // index.js
 var import_core2 = __toModule(require_core());
 var import_child_process2 = __toModule(require("child_process"));
 
 // release.js
+var import_stream = __toModule(require("stream"));
 var import_child_process = __toModule(require("child_process"));
 var import_core = __toModule(require_core());
 var import_semantic_release = __toModule(require("semantic-release"));
-var import_stream_buffers = __toModule(require_streambuffer());
 var getRelease = (debugMode) => {
   const commitMessage = (0, import_child_process.execSync)("git log -1 --pretty=%B").toString();
   let release = commitMessage.includes("release-npm");
@@ -1498,10 +1321,20 @@ var getRelease = (debugMode) => {
     type
   };
 };
+var createWritableStream = () => {
+  const data = [];
+  const stream = new import_stream.Writable();
+  stream._write = (chunk, encoding, next) => {
+    data.push(chunk.toString());
+    next();
+  };
+  stream._print = () => data.join("");
+  return stream;
+};
 var createRelease = async (debugMode) => {
   const currentBranch = (0, import_child_process.execSync)("git rev-parse --abbrev-ref HEAD").toString().trim();
   const branchConfiguration = { name: currentBranch };
-  const dryRun = (0, import_core.getInput)("DRY_RUN") === "true";
+  const dryRun = (0, import_core.getInput)("DRY_RUN") === "true" || debugMode;
   const channelInput = (0, import_core.getInput)("CHANNEL");
   if (channelInput) {
     branchConfiguration.channel = channelInput;
@@ -1509,8 +1342,8 @@ var createRelease = async (debugMode) => {
   if (channelInput) {
     (0, import_core.info)(`Release channel ${channelInput}.`);
   }
-  if (debugMode) {
-    return (0, import_core.info)(`Skipping release in debug mode.`);
+  if (dryRun) {
+    (0, import_core.info)("Running release in dry run mode.");
   }
   const env = {
     ...process.env,
@@ -1529,8 +1362,8 @@ var createRelease = async (debugMode) => {
       env[key] = value;
     }
   });
-  const logs = (0, import_stream_buffers.WritableStreamBuffer)();
-  const errors = (0, import_stream_buffers.WritableStreamBuffer)();
+  const logs = createWritableStream();
+  const errors = createWritableStream();
   try {
     const releaseResult = await (0, import_semantic_release.default)({
       branches: [branchConfiguration],
@@ -1542,14 +1375,16 @@ var createRelease = async (debugMode) => {
       stderr: errors
     });
     if (!releaseResult) {
-      (0, import_core.info)(errors.getContentsAsString("utf8"));
-      return (0, import_core.setFailed)("Failed to create or publish release.");
+      (0, import_core.setFailed)("Failed to create or publish release.");
+      return (0, import_core.info)(errors._print());
     }
     const { nextRelease } = releaseResult;
     const { version, gitTag, channel } = nextRelease;
     (0, import_core.info)(`Released version ${version} in ${channel} channel with ${gitTag} tag.`);
   } catch (error) {
     (0, import_core.setFailed)(`semantic-release failed with ${error}.`);
+    (0, import_core.info)(logs._print());
+    (0, import_core.info)(errors._print());
   }
 };
 

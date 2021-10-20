@@ -12,6 +12,7 @@ test('Release request in debug mode works without issues.', () => {
     // Debug mode triggered by NPM_TOKEN=debug
     expect(output).toContain('Release requested through debug mode.')
     // Will not publish in debug mode.
-    expect(output).toContain('Skipping release in debug mode.')
+    expect(output).toContain('Running release in dry run mode.')
+    expect(output).toContain('semantic-release failed with')
   }
 })

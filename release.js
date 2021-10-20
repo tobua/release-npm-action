@@ -1,7 +1,7 @@
+import { Writable } from 'stream'
 import { execSync } from 'child_process'
 import { info, getInput, setFailed } from '@actions/core'
 import semanticRelease from 'semantic-release'
-import { WritableStreamBuffer } from 'stream-buffers'
 
 export const getRelease = (debugMode) => {
   const commitMessage = execSync('git log -1 --pretty=%B').toString()
@@ -25,10 +25,25 @@ export const getRelease = (debugMode) => {
   }
 }
 
+const createWritableStream = () => {
+  const data = []
+  const stream = new Writable()
+
+  // Needs to be manually implemented.
+  stream._write = (chunk, encoding, next) => {
+    data.push(chunk.toString())
+    next()
+  }
+
+  stream._print = () => data.join('')
+
+  return stream
+}
+
 export const createRelease = async (debugMode) => {
   const currentBranch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
   const branchConfiguration = { name: currentBranch }
-  const dryRun = getInput('DRY_RUN') === 'true'
+  const dryRun = getInput('DRY_RUN') === 'true' || debugMode
   const channelInput = getInput('CHANNEL')
 
   if (channelInput) {
@@ -39,8 +54,8 @@ export const createRelease = async (debugMode) => {
     info(`Release channel ${channelInput}.`)
   }
 
-  if (debugMode) {
-    return info(`Skipping release in debug mode.`)
+  if (dryRun) {
+    info('Running release in dry run mode.')
   }
 
   const env = {
@@ -64,8 +79,8 @@ export const createRelease = async (debugMode) => {
     }
   })
 
-  const logs = WritableStreamBuffer()
-  const errors = WritableStreamBuffer()
+  const logs = createWritableStream()
+  const errors = createWritableStream()
 
   try {
     const releaseResult = await semanticRelease(
@@ -82,8 +97,8 @@ export const createRelease = async (debugMode) => {
     )
 
     if (!releaseResult) {
-      info(errors.getContentsAsString('utf8'))
-      return setFailed('Failed to create or publish release.')
+      setFailed('Failed to create or publish release.')
+      return info(errors._print())
     }
 
     const { nextRelease } = releaseResult
@@ -92,5 +107,8 @@ export const createRelease = async (debugMode) => {
     info(`Released version ${version} in ${channel} channel with ${gitTag} tag.`)
   } catch (error) {
     setFailed(`semantic-release failed with ${error}.`)
+
+    info(logs._print())
+    info(errors._print())
   }
 }
