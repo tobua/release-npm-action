@@ -1,5 +1,9 @@
 name: 'release-npm-action'
 description: 'Verifies, builds, versions and documents a plugin release to npm.'
+author: Matthias Giger
+branding:
+  icon: 'box'
+  color: 'blue'
 inputs:
   NPM_TOKEN:
     description: 'npm Automation token used to publish package.'
@@ -16,6 +20,13 @@ inputs:
   DRY_RUN:
     description: 'Run action for testing puroposes without publishing anything.'
     required: false
+outputs:
+  version:
+    description: 'Version of the release published.'
+  channel:
+    description: 'dist-tag where the release was published.'
+  tag:
+    description: 'Name of the git-tag for the new release.'
 runs:
   # Action will run with latest node LTS, entry loaded with require() therefore no ESM compatibility.
   # See also https://github.com/actions/runner/issues/772.

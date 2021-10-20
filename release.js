@@ -1,6 +1,6 @@
 import { Writable } from 'stream'
 import { execSync } from 'child_process'
-import { info, getInput, setFailed } from '@actions/core'
+import { info, getInput, setFailed, setOutput } from '@actions/core'
 import semanticRelease from 'semantic-release'
 
 export const getRelease = (debugMode) => {
@@ -64,21 +64,6 @@ export const createRelease = async (debugMode) => {
     NPM_TOKEN: getInput('NPM_TOKEN'),
   }
 
-  // TODO document
-  const optionalValues = [
-    'GIT_AUTHOR_NAME',
-    'GIT_AUTHOR_EMAIL',
-    'GIT_COMMITTER_NAME',
-    'GIT_COMMITTER_EMAIL',
-  ]
-
-  optionalValues.forEach((key) => {
-    const value = getInput(key)
-    if (value) {
-      env[key] = value
-    }
-  })
-
   const logs = createWritableStream()
   const errors = createWritableStream()
 
@@ -105,6 +90,10 @@ export const createRelease = async (debugMode) => {
     const { version, gitTag, channel } = nextRelease
 
     info(`Released version ${version} in ${channel} channel with ${gitTag} tag.`)
+
+    setOutput('version', version)
+    setOutput('channel', channel)
+    setOutput('tag', gitTag)
   } catch (error) {
     setFailed(`semantic-release failed with ${error}.`)
 

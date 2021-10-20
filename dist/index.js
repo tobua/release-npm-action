@@ -1350,18 +1350,6 @@ var createRelease = async (debugMode) => {
     GITHUB_TOKEN: (0, import_core.getInput)("GITHUB_TOKEN"),
     NPM_TOKEN: (0, import_core.getInput)("NPM_TOKEN")
   };
-  const optionalValues = [
-    "GIT_AUTHOR_NAME",
-    "GIT_AUTHOR_EMAIL",
-    "GIT_COMMITTER_NAME",
-    "GIT_COMMITTER_EMAIL"
-  ];
-  optionalValues.forEach((key) => {
-    const value = (0, import_core.getInput)(key);
-    if (value) {
-      env[key] = value;
-    }
-  });
   const logs = createWritableStream();
   const errors = createWritableStream();
   try {
