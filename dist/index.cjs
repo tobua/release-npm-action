@@ -1369,12 +1369,15 @@ var createRelease = async () => {
     if (!releaseResult) {
       const printedLogs = logs.print();
       const printedErrors = errors.print();
-      (0, import_core.setFailed)("Failed to create or publish release.");
       if (printedLogs.includes("no relevant changes, so no new")) {
+        if ((0, import_core.getInput)("FAIL_ON_SKIP") !== "false") {
+          (0, import_core.setFailed)("Failed to create or publish release.");
+        }
         (0, import_core.info)("There are no relevant changes, so no new version is released.");
         (0, import_core.info)("See https://github.com/tobua/release-npm-action#troubleshooting for more information.");
         return;
       }
+      (0, import_core.setFailed)("Failed to create or publish release.");
       if (printedErrors) {
         (0, import_core.info)(printedErrors);
       }

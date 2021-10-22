@@ -25,3 +25,4 @@ jobs:
           # Manually trigger a dry run to see if action would work.
           DRY_RUN: true
           MANUAL_TRIGGER: regular
+          FAIL_ON_SKIP: false

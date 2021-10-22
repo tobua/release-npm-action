@@ -94,14 +94,15 @@ jobs:
 
 The following options can be passed to the action.
 
-| Option         | Values    | Required | Description                                                |
-| -------------- | --------- | -------- | ---------------------------------------------------------- |
-| NPM_TOKEN      | string    | true     | npm Automation or Publishing token.                        |
-| GITHUB_TOKEN   | string    | true     | GitHub token automatically created by GitHub.              |
-| MANUAL_TRIGGER | 'regular' | false    | Manually trigger a release even without commit annotation. |
-| CHANNEL        | string    | false    | dist-tag to publish the npm release on, default latest.    |
-| DRY_RUN        | 'true'    | false    | Release in dry mode (no publish).                          |
-| DEBUG          | 'true'    | false    | Run in debug mode.                                         |
+| Option         | Values    | Required | Description                                                                                 |
+| -------------- | --------- | -------- | ------------------------------------------------------------------------------------------- |
+| NPM_TOKEN      | string    | true     | npm Automation or Publishing token.                                                         |
+| GITHUB_TOKEN   | string    | true     | GitHub token automatically created by GitHub.                                               |
+| MANUAL_TRIGGER | 'regular' | false    | Manually trigger a release even without commit annotation.                                  |
+| CHANNEL        | string    | false    | dist-tag to publish the npm release on, default latest.                                     |
+| DRY_RUN        | 'true'    | false    | Release in dry mode (no publish).                                                           |
+| DEBUG          | 'true'    | false    | Run in debug mode.                                                                          |
+| FAIL_ON_SKIP   | 'false'   | false    | Disable action failing when release requested but not published due to no relevant changes. |
 
 `version`, `channel` and `tag` are available as output variables after a successful release.
 
