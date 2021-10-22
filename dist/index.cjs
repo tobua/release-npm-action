@@ -1367,9 +1367,18 @@ var createRelease = async () => {
       stderr: errors
     });
     if (!releaseResult) {
+      const printedLogs = logs.print();
+      const printedErrors = errors.print();
       (0, import_core.setFailed)("Failed to create or publish release.");
-      (0, import_core.info)(errors.print());
-      (0, import_core.info)(logs.print());
+      if (printedLogs.contains("no relevant changes, so no new")) {
+        (0, import_core.info)("There are no relevant changes, so no new version is released.");
+        (0, import_core.info)("See https://github.com/tobua/release-npm-action#troubleshooting for more information.");
+        return;
+      }
+      if (printedErrors) {
+        (0, import_core.info)(printedErrors);
+      }
+      (0, import_core.info)(printedLogs);
       return;
     }
     const { nextRelease } = releaseResult;

@@ -111,4 +111,6 @@ The first version for a plugin release defaults to `1.0.0` and cannot be changed
 
 ## Troubleshooting
 
+`There are no relevant changes, so no new version is released.` This happens if the commits since the last release don't contain any changes that would make it into the release. Note that commits with `ci` type don't need a release as by convention this only touches CI files which aren't published.
+
 If you run into any issues with the action the likely cause is with `semantic-release`. You can try it out locally by running `npx semantic-release --branches main --dry-run --no-ci` without publishing anything.
