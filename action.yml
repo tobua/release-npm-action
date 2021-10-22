@@ -20,6 +20,9 @@ inputs:
   DRY_RUN:
     description: 'Run action for testing puroposes without publishing anything.'
     required: false
+  DEBUG:
+    description: 'Run semantic-release in debug mode.'
+    required: false
 outputs:
   version:
     description: 'Version of the release published.'

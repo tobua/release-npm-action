@@ -3,7 +3,7 @@ import { execSync } from 'child_process'
 import { info, getInput, setFailed, setOutput } from '@actions/core'
 import semanticRelease from 'semantic-release'
 
-export const getRelease = (debugMode) => {
+export const getRelease = () => {
   const commitMessage = execSync('git log -1 --pretty=%B').toString()
   let release = commitMessage.includes('release-npm')
   let type = 'Release requested through commit annotation.'
@@ -14,7 +14,7 @@ export const getRelease = (debugMode) => {
     type = 'Release requested through manual workflow run.'
   }
 
-  if (debugMode) {
+  if (getInput('NPM_TOKEN') === 'debug') {
     release = true
     type = 'Release requested through debug mode.'
   }
@@ -30,20 +30,22 @@ const createWritableStream = () => {
   const stream = new Writable()
 
   // Needs to be manually implemented.
+  // eslint-disable-next-line no-underscore-dangle
   stream._write = (chunk, encoding, next) => {
     data.push(chunk.toString())
     next()
   }
 
-  stream._print = () => data.join('')
+  stream.print = () => data.join('')
 
   return stream
 }
 
-export const createRelease = async (debugMode) => {
+export const createRelease = async () => {
   const currentBranch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
   const branchConfiguration = { name: currentBranch }
-  const dryRun = getInput('DRY_RUN') === 'true' || debugMode
+  const dryRun = getInput('DRY_RUN') === 'true' || getInput('NPM_TOKEN') === 'debug'
+  const debug = getInput('DEBUG') === 'true'
   const channelInput = getInput('CHANNEL')
 
   if (channelInput) {
@@ -56,6 +58,10 @@ export const createRelease = async (debugMode) => {
 
   if (dryRun) {
     info('Running release in dry run mode.')
+  }
+
+  if (debug) {
+    info('Running release in debug mode.')
   }
 
   const env = {
@@ -71,8 +77,8 @@ export const createRelease = async (debugMode) => {
     const releaseResult = await semanticRelease(
       {
         branches: [branchConfiguration],
-        dryRun: dryRun,
-        debug: dryRun,
+        dryRun,
+        debug,
       },
       {
         env,
@@ -83,7 +89,9 @@ export const createRelease = async (debugMode) => {
 
     if (!releaseResult) {
       setFailed('Failed to create or publish release.')
-      return info(errors._print())
+      info(errors.print())
+      info(logs.print())
+      return
     }
 
     const { nextRelease } = releaseResult
@@ -97,7 +105,7 @@ export const createRelease = async (debugMode) => {
   } catch (error) {
     setFailed(`semantic-release failed with ${error}.`)
 
-    info(logs._print())
-    info(errors._print())
+    info(logs.print())
+    info(errors.print())
   }
 }

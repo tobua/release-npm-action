@@ -100,10 +100,15 @@ The following options can be passed to the action.
 | GITHUB_TOKEN   | string    | true     | GitHub token automatically created by GitHub.              |
 | MANUAL_TRIGGER | 'regular' | false    | Manually trigger a release even without commit annotation. |
 | CHANNEL        | string    | false    | dist-tag to publish the npm release on, default latest.    |
-| DRY_RUN        | true      | false    | Release in dry mode (no publish).                          |
+| DRY_RUN        | 'true'    | false    | Release in dry mode (no publish).                          |
+| DEBUG          | 'true'    | false    | Run in debug mode.                                         |
 
 `version`, `channel` and `tag` are available as output variables after a successful release.
 
 ## Caveats
 
 The first version for a plugin release defaults to `1.0.0` and cannot be changed. The next version is based on the commit history since the latest release and also cannot be changed.
+
+## Troubleshooting
+
+If you run into any issues with the action the likely cause is with `semantic-release`. You can try it out locally by running `npx semantic-release --branches main --dry-run --no-ci` without publishing anything.

@@ -1304,7 +1304,7 @@ var import_stream = __toModule(require("stream"));
 var import_child_process = __toModule(require("child_process"));
 var import_core = __toModule(require_core());
 var import_semantic_release = __toModule(require("semantic-release"));
-var getRelease = (debugMode) => {
+var getRelease = () => {
   const commitMessage = (0, import_child_process.execSync)("git log -1 --pretty=%B").toString();
   let release = commitMessage.includes("release-npm");
   let type = "Release requested through commit annotation.";
@@ -1312,7 +1312,7 @@ var getRelease = (debugMode) => {
     release = true;
     type = "Release requested through manual workflow run.";
   }
-  if (debugMode) {
+  if ((0, import_core.getInput)("NPM_TOKEN") === "debug") {
     release = true;
     type = "Release requested through debug mode.";
   }
@@ -1328,13 +1328,14 @@ var createWritableStream = () => {
     data.push(chunk.toString());
     next();
   };
-  stream._print = () => data.join("");
+  stream.print = () => data.join("");
   return stream;
 };
-var createRelease = async (debugMode) => {
+var createRelease = async () => {
   const currentBranch = (0, import_child_process.execSync)("git rev-parse --abbrev-ref HEAD").toString().trim();
   const branchConfiguration = { name: currentBranch };
-  const dryRun = (0, import_core.getInput)("DRY_RUN") === "true" || debugMode;
+  const dryRun = (0, import_core.getInput)("DRY_RUN") === "true" || (0, import_core.getInput)("NPM_TOKEN") === "debug";
+  const debug = (0, import_core.getInput)("DEBUG") === "true";
   const channelInput = (0, import_core.getInput)("CHANNEL");
   if (channelInput) {
     branchConfiguration.channel = channelInput;
@@ -1344,6 +1345,9 @@ var createRelease = async (debugMode) => {
   }
   if (dryRun) {
     (0, import_core.info)("Running release in dry run mode.");
+  }
+  if (debug) {
+    (0, import_core.info)("Running release in debug mode.");
   }
   const env = {
     ...process.env,
@@ -1356,7 +1360,7 @@ var createRelease = async (debugMode) => {
     const releaseResult = await (0, import_semantic_release.default)({
       branches: [branchConfiguration],
       dryRun,
-      debug: dryRun
+      debug
     }, {
       env,
       stdout: logs,
@@ -1364,7 +1368,9 @@ var createRelease = async (debugMode) => {
     });
     if (!releaseResult) {
       (0, import_core.setFailed)("Failed to create or publish release.");
-      return (0, import_core.info)(errors._print());
+      (0, import_core.info)(errors.print());
+      (0, import_core.info)(logs.print());
+      return;
     }
     const { nextRelease } = releaseResult;
     const { version, gitTag, channel } = nextRelease;
@@ -1374,8 +1380,8 @@ var createRelease = async (debugMode) => {
     (0, import_core.setOutput)("tag", gitTag);
   } catch (error) {
     (0, import_core.setFailed)(`semantic-release failed with ${error}.`);
-    (0, import_core.info)(logs._print());
-    (0, import_core.info)(errors._print());
+    (0, import_core.info)(logs.print());
+    (0, import_core.info)(errors.print());
   }
 };
 
@@ -1387,16 +1393,16 @@ var run = async () => {
       return (0, import_core2.setFailed)("Missing NPM_TOKEN action secret.");
     }
     (0, import_core2.info)(`release-npm-action with node: ${(0, import_child_process2.execSync)("node -v").toString()}`);
-    const debugMode = token === "debug";
-    const { release, type } = getRelease(debugMode);
+    const { release, type } = getRelease();
     if (!release) {
       return (0, import_core2.info)("No release requested.");
     }
     (0, import_core2.info)(type);
-    await createRelease(debugMode);
+    await createRelease();
   } catch (error) {
     (0, import_core2.setFailed)(error.message);
   }
+  return null;
 };
 run();
 //# sourceMappingURL=index.cjs.map

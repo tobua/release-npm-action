@@ -2,8 +2,9 @@ import { join } from 'path'
 import { execSync } from 'child_process'
 
 test('Release request in debug mode works without issues.', () => {
-  process.env['INPUT_NPM_TOKEN'] = 'debug'
-  process.env['INPUT_DRY_RUN'] = 'true'
+  process.env.INPUT_NPM_TOKEN = 'debug'
+  process.env.INPUT_DRY_RUN = 'true'
+  process.env.INPUT_DEBUG = 'true'
 
   try {
     execSync(`node ${join(process.cwd(), 'index.js')}`, { env: process.env }).toString()
@@ -13,6 +14,7 @@ test('Release request in debug mode works without issues.', () => {
     expect(output).toContain('Release requested through debug mode.')
     // Will not publish in debug mode.
     expect(output).toContain('Running release in dry run mode.')
+    expect(output).toContain('Running release in debug mode.')
     expect(output).toContain('semantic-release failed with')
   }
 })

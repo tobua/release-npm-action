@@ -13,8 +13,7 @@ const run = async () => {
 
     info(`release-npm-action with node: ${execSync('node -v').toString()}`)
 
-    const debugMode = token === 'debug'
-    const { release, type } = getRelease(debugMode)
+    const { release, type } = getRelease()
 
     if (!release) {
       return info('No release requested.')
@@ -22,10 +21,12 @@ const run = async () => {
 
     info(type)
 
-    await createRelease(debugMode)
+    await createRelease()
   } catch (error) {
     setFailed(error.message)
   }
+
+  return null
 }
 
 run()
