@@ -23,6 +23,9 @@ inputs:
   DEBUG:
     description: 'Run semantic-release in debug mode.'
     required: false
+  FAIL_ON_SKIP:
+    description: 'Pass action when release requested but skipped due to no relevant changes.'
+    required: false
 outputs:
   version:
     description: 'Version of the release published.'
