@@ -93,7 +93,7 @@ export const createRelease = async () => {
 
       setFailed('Failed to create or publish release.')
 
-      if (printedLogs.contains('no relevant changes, so no new')) {
+      if (printedLogs.includes('no relevant changes, so no new')) {
         info('There are no relevant changes, so no new version is released.')
         info(
           'See https://github.com/tobua/release-npm-action#troubleshooting for more information.'
