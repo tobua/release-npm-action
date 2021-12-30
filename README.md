@@ -36,7 +36,6 @@ jobs:
       - uses: tobua/release-npm-action@v1
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Request Release
@@ -85,7 +84,6 @@ jobs:
       - uses: tobua/release-npm-action@v0
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Hand over manual input trigger.
           MANUAL_TRIGGER: ${{ github.event.inputs.manual }}
 ```
@@ -97,7 +95,7 @@ The following options can be passed to the action.
 | Option         | Values    | Required | Description                                                                                 |
 | -------------- | --------- | -------- | ------------------------------------------------------------------------------------------- |
 | NPM_TOKEN      | string    | true     | npm Automation or Publishing token.                                                         |
-| GITHUB_TOKEN   | string    | true     | GitHub token automatically created by GitHub.                                               |
+| GITHUB_TOKEN   | string    | false    | GitHub token automatically created by GitHub, defaults to repository scoped token.          |
 | MANUAL_TRIGGER | 'regular' | false    | Manually trigger a release even without commit annotation.                                  |
 | CHANNEL        | string    | false    | dist-tag to publish the npm release on, default latest.                                     |
 | DRY_RUN        | 'true'    | false    | Release in dry mode (no publish).                                                           |

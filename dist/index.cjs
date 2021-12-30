@@ -6,18 +6,18 @@ var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
 var __commonJS = (cb, mod) => function __require() {
-  return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
-var __reExport = (target, module2, desc) => {
+var __reExport = (target, module2, copyDefault, desc) => {
   if (module2 && typeof module2 === "object" || typeof module2 === "function") {
     for (let key of __getOwnPropNames(module2))
-      if (!__hasOwnProp.call(target, key) && key !== "default")
+      if (!__hasOwnProp.call(target, key) && (copyDefault || key !== "default"))
         __defProp(target, key, { get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable });
   }
   return target;
 };
-var __toModule = (module2) => {
-  return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", module2 && module2.__esModule && "default" in module2 ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
+var __toESM = (module2, isNodeMode) => {
+  return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", !isNodeMode && module2 && module2.__esModule ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
 };
 
 // node_modules/@actions/core/lib/utils.js
@@ -1296,14 +1296,14 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
 });
 
 // index.js
-var import_core2 = __toModule(require_core());
-var import_child_process2 = __toModule(require("child_process"));
+var import_core2 = __toESM(require_core(), 1);
+var import_child_process2 = require("child_process");
 
 // release.js
-var import_stream = __toModule(require("stream"));
-var import_child_process = __toModule(require("child_process"));
-var import_core = __toModule(require_core());
-var import_semantic_release = __toModule(require("semantic-release"));
+var import_stream = require("stream");
+var import_child_process = require("child_process");
+var import_core = __toESM(require_core(), 1);
+var import_semantic_release = __toESM(require("semantic-release"), 1);
 var getRelease = () => {
   const commitMessage = (0, import_child_process.execSync)("git log -1 --pretty=%B").toString();
   let release = commitMessage.includes("release-npm");

@@ -21,7 +21,6 @@ jobs:
       - uses: ./
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Manually trigger a dry run to see if action would work.
           DRY_RUN: true
           MANUAL_TRIGGER: regular

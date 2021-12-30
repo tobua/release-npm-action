@@ -11,6 +11,7 @@ inputs:
   GITHUB_TOKEN:
     description: 'Used to create GitHub release with changelog contents.'
     required: false
+    default: ${{ github.token }}
   MANUAL_TRIGGER:
     description: 'Optional release type for manually triggering release workflow.'
     required: false
@@ -35,6 +36,7 @@ outputs:
     description: 'Name of the git-tag for the new release.'
 runs:
   # Action will run with latest node LTS, entry loaded with require() therefore no ESM compatibility.
+  # TODO Only verified with node12, might work now with node16.
   # See also https://github.com/actions/runner/issues/772.
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.cjs'
