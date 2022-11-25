@@ -15,6 +15,6 @@ test('Release request in debug mode works without issues.', () => {
     // Will not publish in debug mode.
     expect(output).toContain('Running release in dry run mode.')
     expect(output).toContain('Running release in debug mode.')
-    expect(output).toContain('semantic-release failed with')
+    expect(output).toContain('Failed to create or publish release')
   }
 })

@@ -47,6 +47,11 @@ export const createRelease = async () => {
   const dryRun = getInput('DRY_RUN') === 'true' || getInput('NPM_TOKEN') === 'debug'
   const debug = getInput('DEBUG') === 'true'
   const channelInput = getInput('CHANNEL')
+  const folder = getInput('FOLDER')
+
+  if (folder) {
+    info(`Releasing from folder: ${folder}.`)
+  }
 
   if (channelInput) {
     branchConfiguration.channel = channelInput
@@ -84,6 +89,7 @@ export const createRelease = async () => {
         env,
         stdout: logs,
         stderr: errors,
+        cwd: folder,
       }
     )
 
@@ -119,6 +125,7 @@ export const createRelease = async () => {
     setOutput('version', version)
     setOutput('channel', channel)
     setOutput('tag', gitTag)
+    setOutput('folder', folder)
   } catch (error) {
     setFailed(`semantic-release failed with ${error}.`)
 
