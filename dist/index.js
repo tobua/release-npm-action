@@ -4,6 +4,7 @@ import { execSync as execSync2 } from "child_process";
 
 // release.js
 import { Writable } from "stream";
+import { join } from "path";
 import { execSync } from "child_process";
 import { info, getInput, setFailed, setOutput } from "@actions/core";
 import semanticRelease from "semantic-release";
@@ -42,7 +43,7 @@ var createRelease = async () => {
   const channelInput = getInput("CHANNEL");
   const folder = getInput("FOLDER");
   if (folder) {
-    info(`Releasing from folder: ${folder}.`);
+    info(`Releasing from folder: ${folder} in ${process.cwd()}.`);
   }
   if (channelInput) {
     branchConfiguration.channel = channelInput;
@@ -74,7 +75,7 @@ var createRelease = async () => {
         env,
         stdout: logs,
         stderr: errors,
-        cwd: folder
+        cwd: join(process.cwd(), folder)
       }
     );
     if (!releaseResult) {
