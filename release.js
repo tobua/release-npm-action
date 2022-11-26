@@ -1,5 +1,4 @@
 import { Writable } from 'stream'
-import { join } from 'path'
 import { execSync } from 'child_process'
 import { info, getInput, setFailed, setOutput } from '@actions/core'
 import semanticRelease from 'semantic-release'
@@ -82,6 +81,19 @@ export const createRelease = async () => {
   try {
     const releaseResult = await semanticRelease(
       {
+        plugins: [
+          '@semantic-release/commit-analyzer',
+          '@semantic-release/release-notes-generator',
+          folder
+            ? [
+                '@semantic-release/npm',
+                {
+                  pkgRoot: folder,
+                },
+              ]
+            : '@semantic-release/npm',
+          '@semantic-release/github',
+        ],
         branches: [branchConfiguration],
         dryRun,
         debug,
@@ -90,7 +102,6 @@ export const createRelease = async () => {
         env,
         stdout: logs,
         stderr: errors,
-        cwd: join(process.cwd(), folder),
       }
     )
 
