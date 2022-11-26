@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "semantic-release": "^19.0.5"
   }
