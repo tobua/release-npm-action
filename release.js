@@ -1,4 +1,5 @@
 import { Writable } from 'stream'
+import { join } from 'path'
 import { execSync } from 'child_process'
 import { info, getInput, setFailed, setOutput } from '@actions/core'
 import semanticRelease from 'semantic-release'
@@ -50,7 +51,7 @@ export const createRelease = async () => {
   const folder = getInput('FOLDER')
 
   if (folder) {
-    info(`Releasing from folder: ${folder}.`)
+    info(`Releasing from folder: ${folder} in ${process.cwd()}.`)
   }
 
   if (channelInput) {
@@ -89,7 +90,7 @@ export const createRelease = async () => {
         env,
         stdout: logs,
         stderr: errors,
-        cwd: folder,
+        cwd: join(process.cwd(), folder),
       }
     )
 
