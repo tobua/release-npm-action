@@ -101,6 +101,7 @@ The following options can be passed to the action.
 | DRY_RUN        | 'true'    | false    | Release in dry mode (no publish).                                                           |
 | DEBUG          | 'true'    | false    | Run in debug mode.                                                                          |
 | FAIL_ON_SKIP   | 'false'   | false    | Disable action failing when release requested but not published due to no relevant changes. |
+| FOLDER         | string    | false    | Optional folder where the package to publish resides. Plugin only works with one package.   |
 
 `version`, `channel` and `tag` are available as output variables after a successful release.
 

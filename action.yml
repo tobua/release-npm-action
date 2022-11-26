@@ -30,7 +30,6 @@ inputs:
   FOLDER:
     description: 'Folder where the package to release resides.'
     required: false
-    default: ${{ github.workspace }}
 outputs:
   version:
     description: 'Version of the release published.'
