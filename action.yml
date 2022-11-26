@@ -43,4 +43,4 @@ runs:
   # TODO Only verified with node12, might work now with node16.
   # See also https://github.com/actions/runner/issues/772.
   using: 'node16'
-  main: 'dist/index.cjs'
+  main: 'dist/index.js'
