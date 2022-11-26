@@ -39,8 +39,5 @@ outputs:
   tag:
     description: 'Name of the git-tag for the new release.'
 runs:
-  # Action will run with latest node LTS, entry loaded with require() therefore no ESM compatibility.
-  # TODO Only verified with node12, might work now with node16.
-  # See also https://github.com/actions/runner/issues/772.
   using: 'node16'
   main: 'dist/index.js'
