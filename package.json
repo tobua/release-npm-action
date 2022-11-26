@@ -7,7 +7,7 @@
   "author": "Matthias Giger",
   "scripts": {
     "lint": "eslint .",
-    "build": "esbuild index.js --bundle --platform=node --format=esm --target=node --outfile=dist/index.js --sourcemap --external:semantic-release && npm install --no-package-lock --prefix dist",
+    "build": "esbuild index.js --bundle --platform=node --format=esm --target=esnext --outfile=dist/index.js --sourcemap --external:semantic-release --external:@actions/core && npm install --no-package-lock --legacy-peer-deps --prefix dist",
     "test": "jest"
   },
   "dependencies": {
