@@ -2,6 +2,6 @@
   "type": "module",
   "dependencies": {
     "@actions/core": "^1.10.0",
-    "semantic-release": "^19.0.5"
+    "semantic-release": "^21.0.1"
   }
 }

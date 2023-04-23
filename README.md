@@ -31,7 +31,7 @@ jobs:
     # needs: [test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       # run build if necessary
       - uses: tobua/release-npm-action@v1
         with:
@@ -81,7 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # ...
-      - uses: tobua/release-npm-action@v0
+      - uses: tobua/release-npm-action@v1
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           # Hand over manual input trigger.
@@ -104,6 +104,36 @@ The following options can be passed to the action.
 | FOLDER         | string    | false    | Optional folder where the package to publish resides. Plugin only works with one package.   |
 
 `version`, `channel` and `tag` are available as output variables after a successful release.
+
+## npm Provenance
+
+In order to publish your package with the contents signed have been built on GitHub in the linked repository add the following npm `publishConfig` to the `package.json`.
+
+```json
+{
+  "publishConfig": {
+    "provenance": true
+  }
+}
+```
+
+In your action make sure that the non-default `id-token` permission is enabled along with the `contents` permission. To use the provenance feature make sure to update npm to the latest version before publishing.
+
+```yml
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Required to mint token for npm package provenance
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install -g npm@latest
+      # ...
+      - uses: tobua/release-npm-action@v1
+        with:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+```
 
 ## Caveats
 

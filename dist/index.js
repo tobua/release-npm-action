@@ -109,7 +109,7 @@ var createRelease = async () => {
     }
     const { nextRelease } = releaseResult;
     const { version, gitTag, channel } = nextRelease;
-    info(`Released version ${version} in ${channel} channel with ${gitTag} tag.`);
+    info(`Released version ${version} in ${channel || "latest"} channel with ${gitTag} tag.`);
     setOutput("version", version);
     setOutput("channel", channel);
     setOutput("tag", gitTag);
