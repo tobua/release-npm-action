@@ -1,3 +1,5 @@
+import { existsSync } from 'fs'
+import { resolve } from 'path'
 import { Writable } from 'stream'
 import { execSync } from 'child_process'
 import { info, getInput, setFailed, setOutput } from '@actions/core'
@@ -69,10 +71,16 @@ export const createRelease = async () => {
     info('Running release in debug mode.')
   }
 
+  // TODO for debugging provenance issue only...
+  info(resolve(process.cwd(), '.npmrc'))
+  info(process.cwd(), '.npmrc')
+  info(existsSync(resolve(process.cwd(), '.npmrc')) ? 'exists' : 'doesnt exist')
+
   const env = {
     ...process.env,
     GITHUB_TOKEN: getInput('GITHUB_TOKEN'),
     NPM_TOKEN: getInput('NPM_TOKEN'),
+    NPM_CONFIG_USERCONFIG: resolve(process.cwd(), '.npmrc'),
   }
 
   const logs = createWritableStream()
