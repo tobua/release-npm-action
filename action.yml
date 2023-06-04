@@ -1,6 +1,9 @@
 name: 'release-npm-action'
 description: 'Verifies, builds, versions and documents a plugin release to npm.'
 author: Matthias Giger
+permissions:
+  id-token: write # Required to mint token for npm package provenance
+  contents: write
 branding:
   icon: 'box'
   color: 'blue'
