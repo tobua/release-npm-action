@@ -113,6 +113,11 @@ export const createRelease = async () => {
       }
     )
 
+    info('DEBUG')
+    info(logs.print())
+    info(errors.print())
+    info('DEBUG END')
+
     if (!releaseResult) {
       const printedLogs = logs.print()
       const printedErrors = errors.print()
