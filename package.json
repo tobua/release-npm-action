@@ -34,7 +34,7 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
     "prettier": "^2.8.8",
-    "vitest": "^0.31.4"
+    "vitest": "^0.32.0"
   },
   "prettier": {
     "printWidth": 100,

@@ -21,10 +21,6 @@ const run = async () => {
 
     info(type)
 
-    // Update npm for provenance support.
-    execSync('npm install npm@latest', { stdio: 'inherit' })
-    execSync('npm install -g npm@latest', { stdio: 'inherit' })
-
     await createRelease()
   } catch (error) {
     setFailed(error.message)

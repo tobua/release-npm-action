@@ -93,6 +93,10 @@ var createRelease = async () => {
         stderr: errors
       }
     );
+    info("DEBUG");
+    info(logs.print());
+    info(errors.print());
+    info("DEBUG END");
     if (!releaseResult) {
       const printedLogs = logs.print();
       const printedErrors = errors.print();
@@ -140,6 +144,8 @@ var run = async () => {
       return info2("No release requested.");
     }
     info2(type);
+    execSync2("npm install npm@latest", { stdio: "inherit" });
+    execSync2("npm install -g npm@latest", { stdio: "inherit" });
     await createRelease();
   } catch (error) {
     setFailed2(error.message);

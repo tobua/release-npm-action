@@ -71,11 +71,6 @@ export const createRelease = async () => {
     info('Running release in debug mode.')
   }
 
-  // TODO for debugging provenance issue only...
-  info(resolve(process.cwd(), '.npmrc'))
-  info(process.cwd(), '.npmrc')
-  info(existsSync(resolve(process.cwd(), '.npmrc')) ? 'exists' : 'doesnt exist')
-
   const env = {
     ...process.env,
     GITHUB_TOKEN: getInput('GITHUB_TOKEN'),
@@ -113,10 +108,10 @@ export const createRelease = async () => {
       }
     )
 
-    info('DEBUG')
-    info(logs.print())
-    info(errors.print())
-    info('DEBUG END')
+    if (debug) {
+      info(logs.print())
+      info(errors.print())
+    }
 
     if (!releaseResult) {
       const printedLogs = logs.print()
