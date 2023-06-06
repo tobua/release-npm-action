@@ -45,5 +45,7 @@ runs:
         node-version: 20
     - name: 🦺 Install latest npm with npm package provenance feature
       run: npm install -g npm@latest
+      shell: bash
     - name: 🚀 Run release action script
       run: node ./dist/index.js
+      shell: bash
