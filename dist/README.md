@@ -3,3 +3,5 @@
 Since both `esbuild` and `ncc` weren't able to bundle the external dependencies the `node_modules` folder with the required dependencies is checked into source-control. The dependencies will be created along with the regular build script. The problematic parts were dynamic requires which cannot be resolved at build time along with `require.resolve` statements which also cannot be resolved during build time. `ncc` can only generate an ESM build from an ESM initial project.
 
 `semantic-release` and `@actions/core` are currently the only dependencies with issues the others can be bundled well. Its version has to be updated manually in `dist/package.json`.
+
+A custom change has been made in `@semantic-release/npm/lib/publish.js` to `preferLocal: false` to ensure the global npm version is used for publishing. This allows updating to npm > 9.5 which is required for `--provenance` support. The maximum node version for actions currently has no support and preferLocal will not default to the bundled one as was the goal of the original code.

@@ -128,9 +128,10 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v3
+      # Important: Requires at least npm v9.5 (Included in Node.js >= 20)
       - run: npm install -g npm@latest
       # ...
-      - uses: tobua/release-npm-action@v1
+      - uses: tobua/release-npm-action@v2
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```

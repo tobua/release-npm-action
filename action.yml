@@ -38,14 +38,5 @@ outputs:
   tag:
     description: 'Name of the git-tag for the new release.'
 runs:
-  using: 'composite'
-  steps:
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 20
-    - name: 🦺 Install latest npm with npm package provenance feature
-      run: npm install -g npm@latest
-      shell: bash
-    - name: 🚀 Run release action script
-      run: node ./dist/index.js
-      shell: bash
+  using: 'node16'
+  main: 'dist/index.js'
