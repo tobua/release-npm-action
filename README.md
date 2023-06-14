@@ -11,6 +11,7 @@ GitHub action to version and document a plugin release to npm using [semantic-re
 - No additional commits made.
 - No version required in `package.json`.
 - No project dependencies necessary.
+- [npm provenance](#npm-provenance) support.
 
 ## Usage
 
@@ -125,7 +126,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write # Required to mint token for npm package provenance
-      contents: write
+      contents: write # Needed to create and write release notes in GitHub release
     steps:
       - uses: actions/checkout@v3
       # Important: Requires at least npm v9.5 (Included in Node.js >= 20)
@@ -139,6 +140,8 @@ jobs:
 ## Caveats
 
 The first version for a plugin release defaults to `1.0.0` and cannot be changed. The next version is based on the commit history since the latest release and also cannot be changed.
+
+**Workaround** To publish the first release below create an empty tag with a version below the one desired. So, to start publishing at `0.1.0` create a `v0.0.1` tag on an earlier commit after which there are commits with `feature` which bumps the minor.
 
 ## Troubleshooting
 
