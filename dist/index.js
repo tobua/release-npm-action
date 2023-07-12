@@ -3,7 +3,6 @@ import { getInput as getInput2, info as info2, setFailed as setFailed2 } from "@
 import { execSync as execSync2 } from "child_process";
 
 // release.js
-import { existsSync } from "fs";
 import { resolve } from "path";
 import { Writable } from "stream";
 import { execSync } from "child_process";
@@ -58,9 +57,6 @@ var createRelease = async () => {
   if (debug) {
     info("Running release in debug mode.");
   }
-  info(resolve(process.cwd(), ".npmrc"));
-  info(process.cwd(), ".npmrc");
-  info(existsSync(resolve(process.cwd(), ".npmrc")) ? "exists" : "doesnt exist");
   const env = {
     ...process.env,
     GITHUB_TOKEN: getInput("GITHUB_TOKEN"),
@@ -93,10 +89,10 @@ var createRelease = async () => {
         stderr: errors
       }
     );
-    info("DEBUG");
-    info(logs.print());
-    info(errors.print());
-    info("DEBUG END");
+    if (debug) {
+      info(logs.print());
+      info(errors.print());
+    }
     if (!releaseResult) {
       const printedLogs = logs.print();
       const printedErrors = errors.print();
@@ -144,8 +140,6 @@ var run = async () => {
       return info2("No release requested.");
     }
     info2(type);
-    execSync2("npm install npm@latest", { stdio: "inherit" });
-    execSync2("npm install -g npm@latest", { stdio: "inherit" });
     await createRelease();
   } catch (error) {
     setFailed2(error.message);

@@ -20,21 +20,20 @@ Add steps to build and test before the release as usual.
 ```yaml
 name: release
 
-# Runs always on commits, will only release when requested, see below.
+# Run action on every commit to main, release only when requested through commit annotation.
 on:
   push:
     branches: [main]
 
 jobs:
-  test:
-    # test step if necessary
-  release:
-    # needs: [test]
+  build-test-release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      # run build if necessary
-      - uses: tobua/release-npm-action@v1
+      - run: npm install
+      - run: npm run build
+      - run: npm test
+      - uses: tobua/release-npm-action@v2
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```
@@ -43,7 +42,7 @@ jobs:
 
 ### `release-npm` in Commit Body
 
-To request the next commit to be released if the pipeline passes add a remark to the commit message.
+To request the next commit to be released if the pipeline passes add a remark to the commit message. Check out this [blog post](https://onwebfocus.com/commit) detailing semantic versioning and including a tool to generate commit messages including a release annotation.
 
 ```
 feat(component): implement swipe and dot functionality for Intro
@@ -82,7 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # ...
-      - uses: tobua/release-npm-action@v1
+      - uses: tobua/release-npm-action@v2
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           # Hand over manual input trigger.
@@ -129,9 +128,9 @@ jobs:
       contents: write # Needed to create and write release notes in GitHub release
     steps:
       - uses: actions/checkout@v3
+      # ... install, built, test etc.
       # Important: Requires at least npm v9.5 (Included in Node.js >= 20)
       - run: npm install -g npm@latest
-      # ...
       - uses: tobua/release-npm-action@v2
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
