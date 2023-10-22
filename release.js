@@ -1,4 +1,3 @@
-import { existsSync } from 'fs'
 import { resolve } from 'path'
 import { Writable } from 'stream'
 import { execSync } from 'child_process'
@@ -105,7 +104,7 @@ export const createRelease = async () => {
         env,
         stdout: logs,
         stderr: errors,
-      }
+      },
     )
 
     if (debug) {
@@ -123,7 +122,7 @@ export const createRelease = async () => {
         }
         info('There are no relevant changes, so no new version is released.')
         info(
-          'See https://github.com/tobua/release-npm-action#troubleshooting for more information.'
+          'See https://github.com/tobua/release-npm-action#troubleshooting for more information.',
         )
         return
       }

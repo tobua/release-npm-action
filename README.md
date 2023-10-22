@@ -33,7 +33,7 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: npm test
-      - uses: tobua/release-npm-action@v2
+      - uses: tobua/release-npm-action@v3
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```
@@ -62,6 +62,9 @@ The annotation can be placed anywhere in the commit message.
 
 Alternatively, a release can be manually triggered without annotated commits. This requires the action to run on the `workflow_dispatch` trigger. When that is added a workflow can be triggered from the GitHub workflow UI for this action. The UI dialogue will prompt for an input which is set to 'regular' by default and when submitted with this value will trigger a manual release.
 
+<details>
+  <summary>Open example of manual release workflow</summary>
+
 ```yaml
 name: push
 
@@ -81,12 +84,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # ...
-      - uses: tobua/release-npm-action@v2
+      - uses: tobua/release-npm-action@v3
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           # Hand over manual input trigger.
           MANUAL_TRIGGER: ${{ github.event.inputs.manual }}
 ```
+
+</details>
 
 ## Options / Inputs
 
@@ -117,8 +122,6 @@ In order to publish your package with the contents signed have been built on Git
 }
 ```
 
-In your action make sure that the non-default `id-token` permission is enabled along with the `contents` permission. To use the provenance feature make sure to update npm to the latest version before publishing.
-
 ```yml
 jobs:
   release:
@@ -129,12 +132,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       # ... install, built, test etc.
-      # Important: Requires at least npm v9.5 (Included in Node.js >= 20)
-      - run: npm install -g npm@latest
-      - uses: tobua/release-npm-action@v2
+      - uses: tobua/release-npm-action@v3
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```
+
+### Provenance Requirements
+
+- Node.js > 18 and npm > 9.5 (GitHub Action default)
+- Provenance enabled in `publishConfig`, `.npmrc` or with `npm publish --provenance` flag
+- Package already exists - **will not work on first publish!**
+- `id-token` and `contents` permissions (minting token and publishing GitHub release in repository)
+- Repository **must be public**
 
 ## Caveats
 
