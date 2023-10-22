@@ -38,4 +38,5 @@ outputs:
   tag:
     description: 'Name of the git-tag for the new release.'
 runs:
+  using: 'node20'
   main: 'dist/index.js'
