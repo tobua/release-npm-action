@@ -1,6 +1,6 @@
 import type {Primitive} from './primitive';
 import type {Numeric} from './numeric';
-import type {IsNotFalse} from './internal';
+import type {IsNotFalse, IsPrimitive} from './internal';
 import type {IsNever} from './is-never';
 
 /**
@@ -22,10 +22,12 @@ LiteralCheck<1, string>
 */
 type LiteralCheck<T, LiteralType extends Primitive> = (
 	IsNever<T> extends false // Must be wider than `never`
-		? [T] extends [LiteralType] // Must be narrower than `LiteralType`
-			? [LiteralType] extends [T] // Cannot be wider than `LiteralType`
-				? false
-				: true
+		? [T] extends [LiteralType & infer U] // Remove any branding
+			? [U] extends [LiteralType] // Must be narrower than `LiteralType`
+				? [LiteralType] extends [U] // Cannot be wider than `LiteralType`
+					? false
+					: true
+				: false
 			: false
 		: false
 );
@@ -250,4 +252,7 @@ stripLeading(str, 'abc');
 @category Type Guard
 @category Utilities
 */
-export type IsLiteral<T extends Primitive> = IsNotFalse<IsLiteralUnion<T>>;
+export type IsLiteral<T> =
+	IsPrimitive<T> extends true
+		? IsNotFalse<IsLiteralUnion<T>>
+		: false;

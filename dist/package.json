@@ -1,7 +1,7 @@
 {
   "type": "module",
   "dependencies": {
-    "@actions/core": "^1.10.1",
-    "semantic-release": "^22.0.5"
+    "@actions/core": "^1.11.1",
+    "semantic-release": "^24.1.2"
   }
 }
