@@ -29,11 +29,8 @@
     "vitest": "^2.1.2"
   },
   "prettier": {
-    "printWidth": 100,
+    "printWidth": 120,
     "semi": false,
     "singleQuote": true
-  },
-  "engines": {
-    "node": ">= 18"
   }
 }
