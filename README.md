@@ -29,11 +29,11 @@ jobs:
   build-test-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - run: npm install
       - run: npm run build
       - run: npm test
-      - uses: tobua/release-npm-action@v3
+      - uses: tobua/release-npm-action@v4
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```
@@ -84,7 +84,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # ...
-      - uses: tobua/release-npm-action@v3
+      - uses: tobua/release-npm-action@v4
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           # Hand over manual input trigger.
@@ -130,9 +130,9 @@ jobs:
       id-token: write # Required to mint token for npm package provenance
       contents: write # Needed to create and write release notes in GitHub release
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       # ... install, built, test etc.
-      - uses: tobua/release-npm-action@v3
+      - uses: tobua/release-npm-action@v4
         with:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```

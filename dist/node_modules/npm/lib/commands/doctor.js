@@ -1,6 +1,6 @@
 const cacache = require('cacache')
 const { access, lstat, readdir, constants: { R_OK, W_OK, X_OK } } = require('node:fs/promises')
-const fetch = require('make-fetch-happen')
+const npmFetch = require('make-fetch-happen')
 const which = require('which')
 const pacote = require('pacote')
 const { resolve } = require('node:path')
@@ -27,10 +27,9 @@ const maskLabel = mask => {
   return label.join(', ')
 }
 
-const subcommands = [
+const checks = [
   {
-    // Ping is left in as a legacy command but is listed as "connection" to
-    // make more sense to more people
+    // Ping is left in as a legacy command but is listed as "connection" to make more sense to more people
     groups: ['connection', 'ping', 'registry'],
     title: 'Connecting to the registry',
     cmd: 'checkPing',
@@ -100,11 +99,9 @@ class Doctor extends BaseCommand {
   static name = 'doctor'
   static params = ['registry']
   static ignoreImplicitWorkspace = false
-  static usage = [`[${subcommands.flatMap(s => s.groups)
+  static usage = [`[${checks.flatMap(s => s.groups)
     .filter((value, index, self) => self.indexOf(value) === index && value !== 'ping')
     .join('] [')}]`]
-
-  static subcommands = subcommands
 
   async exec (args) {
     log.info('doctor', 'Running checkup')
@@ -128,7 +125,6 @@ class Doctor extends BaseCommand {
 
     if (!allOk) {
       if (this.npm.silent) {
-        /* eslint-disable-next-line max-len */
         throw new Error('Some problems found. Check logs or disable silent mode for recommendations.')
       } else {
         throw new Error('Some problems found. See above for recommendations.')
@@ -166,7 +162,7 @@ class Doctor extends BaseCommand {
     const currentRange = `^${current}`
     const url = 'https://nodejs.org/dist/index.json'
     log.info('doctor', 'Getting Node.js release information')
-    const res = await fetch(url, { method: 'GET', ...this.npm.flatOptions })
+    const res = await npmFetch(url, { method: 'GET', ...this.npm.flatOptions })
     const data = await res.json()
     let maxCurrent = '0.0.0'
     let maxLTS = '0.0.0'
@@ -246,7 +242,7 @@ class Doctor extends BaseCommand {
 
         try {
           await access(f, mask)
-        } catch (er) {
+        } catch {
           ok = false
           const msg = `Missing permissions on ${f} (expect: ${maskLabel(mask)})`
           log.error('doctor', 'checkFilesPermission', msg)
@@ -332,7 +328,7 @@ class Doctor extends BaseCommand {
   }
 
   actions (params) {
-    return this.constructor.subcommands.filter(subcmd => {
+    return checks.filter(subcmd => {
       if (process.platform === 'win32' && subcmd.windows === false) {
         return false
       }

@@ -1,9 +1,11 @@
-import type {BuildObject, BuildTuple, NonRecursiveType, ObjectValue} from './internal';
-import type {IsNever} from './is-never';
-import type {Paths} from './paths';
-import type {Simplify} from './simplify.d';
-import type {UnionToIntersection} from './union-to-intersection.d';
-import type {UnknownArray} from './unknown-array';
+import type {TupleOf} from './tuple-of.d.ts';
+import type {BuildObject, NonRecursiveType, ObjectValue} from './internal/index.d.ts';
+import type {IsNever} from './is-never.d.ts';
+import type {Paths} from './paths.d.ts';
+import type {Simplify} from './simplify.d.ts';
+import type {UnionToIntersection} from './union-to-intersection.d.ts';
+import type {UnknownArray} from './unknown-array.d.ts';
+import type {SimplifyDeep} from './simplify-deep.d.ts';
 
 /**
 Pick properties from a deeply-nested object.
@@ -28,31 +30,22 @@ type Configuration = {
 			{
 				city2: string;
 				street2: string;
-			}
-		]
+			},
+		];
 	};
 	otherConfig: any;
 };
 
 type NameConfig = PickDeep<Configuration, 'userConfig.name'>;
-// type NameConfig = {
-// 	userConfig: {
-// 		name: string;
-// 	}
-// };
+//=> {userConfig: {name: string}}
 
 // Supports optional properties
 type User = PickDeep<PartialDeep<Configuration>, 'userConfig.name' | 'userConfig.age'>;
-// type User = {
-// 	userConfig?: {
-// 		name?: string;
-// 		age?: number;
-// 	};
-// };
+//=> {userConfig?: {name?: string; age?: number}}
 
 // Supports array
 type AddressConfig = PickDeep<Configuration, 'userConfig.address.0'>;
-// type AddressConfig = {
+//=> {
 // 	userConfig: {
 // 		address: [{
 // 			city1: string;
@@ -63,14 +56,7 @@ type AddressConfig = PickDeep<Configuration, 'userConfig.address.0'>;
 
 // Supports recurse into array
 type Street = PickDeep<Configuration, 'userConfig.address.1.street2'>;
-// type Street = {
-// 	userConfig: {
-// 		address: [
-// 			unknown,
-// 			{street2: string}
-// 		];
-// 	};
-// }
+//=> {userConfig: {address: [unknown, {street2: string}]}}
 ```
 
 @category Object
@@ -85,7 +71,7 @@ export type PickDeep<T, PathUnion extends Paths<T>> =
 			}[PathUnion]
 			>
 			: T extends object
-				? Simplify<UnionToIntersection<{
+				? SimplifyDeep<UnionToIntersection<{
 					[P in PathUnion]: InternalPickDeep<T, P>;
 				}[PathUnion]>>
 				: never;
@@ -131,9 +117,9 @@ type PickDeepArray<ArrayType extends UnknownArray, P extends string | number> =
 					: never
 			// When `ArrayIndex` is a number literal
 			: ArrayType extends unknown[]
-				? [...BuildTuple<ArrayIndex>, InternalPickDeep<NonNullable<ArrayType[ArrayIndex]>, SubPath>]
+				? [...TupleOf<ArrayIndex>, InternalPickDeep<NonNullable<ArrayType[ArrayIndex]>, SubPath>]
 				: ArrayType extends readonly unknown[]
-					? readonly [...BuildTuple<ArrayIndex>, InternalPickDeep<NonNullable<ArrayType[ArrayIndex]>, SubPath>]
+					? readonly [...TupleOf<ArrayIndex>, InternalPickDeep<NonNullable<ArrayType[ArrayIndex]>, SubPath>]
 					: never
 		// When the path is equal to `number`
 		: P extends `${infer ArrayIndex extends number}`
@@ -142,8 +128,10 @@ type PickDeepArray<ArrayType extends UnknownArray, P extends string | number> =
 				? ArrayType
 				// When `ArrayIndex` is a number literal
 				: ArrayType extends unknown[]
-					? [...BuildTuple<ArrayIndex>, ArrayType[ArrayIndex]]
+					? [...TupleOf<ArrayIndex>, ArrayType[ArrayIndex]]
 					: ArrayType extends readonly unknown[]
-						? readonly [...BuildTuple<ArrayIndex>, ArrayType[ArrayIndex]]
+						? readonly [...TupleOf<ArrayIndex>, ArrayType[ArrayIndex]]
 						: never
 			: never;
+
+export {};

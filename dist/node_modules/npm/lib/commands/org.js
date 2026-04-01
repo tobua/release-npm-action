@@ -61,7 +61,6 @@ class Org extends BaseCommand {
 
     if (!['owner', 'admin', 'developer'].find(x => x === role)) {
       throw new Error(
-        /* eslint-disable-next-line max-len */
         'Third argument `role` must be one of `owner`, `admin`, or `developer`, with `developer` being the default value if omitted.'
       )
     }
@@ -111,9 +110,7 @@ class Org extends BaseCommand {
       output.standard([user, org, userCount, true].join('\t'))
     } else if (!this.npm.silent) {
       output.standard(
-        `Successfully removed ${user} from ${org}. You now have ${userCount} member${
-          userCount === 1 ? '' : 's'
-        } in this org.`
+        `Successfully removed ${user} from ${org}. You now have ${userCount} member${userCount === 1 ? '' : 's'} in this org.`
       )
     }
   }

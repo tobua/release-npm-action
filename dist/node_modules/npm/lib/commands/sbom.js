@@ -1,6 +1,6 @@
 const localeCompare = require('@isaacs/string-locale-compare')('en')
 const BaseCommand = require('../base-cmd.js')
-const { log, output } = require('proc-log')
+const { log, output, META } = require('proc-log')
 const { cyclonedxOutput } = require('../utils/sbom-cyclonedx.js')
 const { spdxOutput } = require('../utils/sbom-spdx.js')
 
@@ -27,7 +27,6 @@ class SBOM extends BaseCommand {
     const packageLockOnly = this.npm.config.get('package-lock-only')
 
     if (!sbomFormat) {
-      /* eslint-disable-next-line max-len */
       throw this.usageError(`Must specify --sbom-format flag with one of: ${SBOM_FORMATS.join(', ')}.`)
     }
 
@@ -40,7 +39,6 @@ class SBOM extends BaseCommand {
     const arb = new Arborist(opts)
 
     const tree = packageLockOnly ? await arb.loadVirtual(opts).catch(() => {
-      /* eslint-disable-next-line max-len */
       throw this.usageError('A package lock or shrinkwrap file is required in package-lock-only mode')
     }) : await arb.loadActual(opts)
 
@@ -64,10 +62,9 @@ class SBOM extends BaseCommand {
     // Populate the response with the list of unique nodes (sorted by location)
     this.#buildResponse(items.sort((a, b) => localeCompare(a.location, b.location)))
 
-    // TODO(BREAKING_CHANGE): all sbom output is in json mode but setting it before
-    // any of the errors will cause those to be thrown in json mode.
+    // TODO(BREAKING_CHANGE): all sbom output is in json mode but setting it before any of the errors will cause those to be thrown in json mode.
     this.npm.config.set('json', true)
-    output.buffer(this.#response)
+    output.standard(JSON.stringify(this.#response, null, 2), { [META]: true, redact: false })
   }
 
   async execWorkspaces (args) {
@@ -81,8 +78,7 @@ class SBOM extends BaseCommand {
     const omit = this.npm.flatOptions.omit
     const workspacesEnabled = this.npm.flatOptions.workspacesEnabled
 
-    // If omit is specified, omit all nodes and their children which match the
-    // specified selectors
+    // If omit is specified, omit all nodes and their children which match the specified selectors
     const omits = omit.reduce((acc, o) => `${acc}:not(.${o})`, '')
 
     if (!workspacesEnabled) {

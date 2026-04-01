@@ -26,7 +26,6 @@ const commands = [
   'get',
   'help',
   'help-search',
-  'hook',
   'init',
   'install',
   'install-ci-test',
@@ -51,7 +50,7 @@ const commands = [
   'repo',
   'restart',
   'root',
-  'run-script',
+  'run',
   'sbom',
   'search',
   'set',
@@ -63,6 +62,8 @@ const commands = [
   'team',
   'test',
   'token',
+  'trust',
+  'undeprecate',
   'uninstall',
   'unpublish',
   'unstar',
@@ -105,7 +106,7 @@ const aliases = {
   t: 'test',
   ddp: 'dedupe',
   v: 'view',
-  run: 'run-script',
+  'run-script': 'run',
   'clean-install': 'ci',
   'clean-install-test': 'install-ci-test',
   x: 'exec',
@@ -132,9 +133,9 @@ const aliases = {
   'dist-tags': 'dist-tag',
   upgrade: 'update',
   udpate: 'update',
-  rum: 'run-script',
+  rum: 'run',
   sit: 'install-ci-test',
-  urn: 'run-script',
+  urn: 'run',
   ogr: 'org',
   'add-user': 'adduser',
 }
@@ -161,9 +162,8 @@ const deref = (c) => {
 
   const abbrevs = abbrev(commands.concat(Object.keys(aliases)))
 
-  // first deref the abbrev, if there is one
-  // then resolve any aliases
-  // so `npm install-cl` will resolve to `install-clean` then to `ci`
+  // first deref the abbrev,
+  // if there is one then resolve any aliases so `npm install-cl` will resolve to `install-clean` then to `ci`
   let a = abbrevs[c]
   while (aliases[a]) {
     a = aliases[a]

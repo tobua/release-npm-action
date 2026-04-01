@@ -11,8 +11,7 @@ class Install extends ArboristWorkspaceCmd {
   static description = 'Install a package'
   static name = 'install'
 
-  // These are in the order they will show up in when running "-h"
-  // If adding to this list, consider adding also to ci.js
+  // These are in the order they will show up in when running "-h" If adding to this list, consider adding also to ci.js
   static params = [
     'save',
     'save-exact',
@@ -28,7 +27,10 @@ class Install extends ArboristWorkspaceCmd {
     'package-lock-only',
     'foreground-scripts',
     'ignore-scripts',
+    'allow-git',
     'audit',
+    'before',
+    'min-release-age',
     'bin-links',
     'fund',
     'dry-run',
@@ -51,10 +53,8 @@ class Install extends ArboristWorkspaceCmd {
     }
 
     if (/\//.test(partialWord)) {
-      // Complete fully to folder if there is exactly one match and it
-      // is a folder containing a package.json file.  If that is not the
-      // case we return 0 matches, which will trigger the default bash
-      // complete.
+      // Complete fully to folder if there is exactly one match and it is a folder containing a package.json file.
+      // If that is not the case we return 0 matches, which will trigger the default bash complete.
       const lastSlashIdx = partialWord.lastIndexOf('/')
       const partialName = partialWord.slice(lastSlashIdx + 1)
       const partialPath = partialWord.slice(0, lastSlashIdx) || '/'
@@ -68,7 +68,7 @@ class Install extends ArboristWorkspaceCmd {
           const contents = await readdir(join(partialPath, sibling))
           const result = (contents.indexOf('package.json') !== -1)
           return result
-        } catch (er) {
+        } catch {
           return false
         }
       }
@@ -86,13 +86,11 @@ class Install extends ArboristWorkspaceCmd {
         }
         // no matches
         return []
-      } catch (er) {
+      } catch {
         return [] // invalid dir: no matching
       }
     }
-    // Note: there used to be registry completion here,
-    // but it stopped making sense somewhere around
-    // 50,000 packages on the registry
+    // Note: there used to be registry completion here, but it stopped making sense somewhere around 50,000 packages on the registry
   }
 
   async exec (args) {
@@ -115,7 +113,6 @@ class Install extends ArboristWorkspaceCmd {
         if (forced) {
           log.warn(
             'install',
-            /* eslint-disable-next-line max-len */
             `Forcing global npm install with incompatible version ${npmManifest.version} into node ${process.version}`
           )
         } else {
@@ -128,12 +125,11 @@ class Install extends ArboristWorkspaceCmd {
     args = args.filter(a => resolve(a) !== this.npm.prefix)
 
     // `npm i -g` => "install this package globally"
-    if (where === globalTop && !args.length) {
+    if (isGlobalInstall && !args.length) {
       args = ['.']
     }
 
-    // throw usage error if trying to install empty package
-    // name to global space, e.g: `npm i -g ""`
+    // throw usage error if trying to install empty package name to global space, e.g: `npm i -g ""`
     if (where === globalTop && !args.every(Boolean)) {
       throw this.usageError()
     }

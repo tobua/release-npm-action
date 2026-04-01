@@ -1,5 +1,5 @@
 const npa = require('npm-package-arg')
-const regFetch = require('npm-registry-fetch')
+const npmFetch = require('npm-registry-fetch')
 const semver = require('semver')
 const { log, output } = require('proc-log')
 const { otplease } = require('../utils/auth.js')
@@ -49,8 +49,7 @@ class DistTag extends BaseCommand {
     }
 
     if (!pkg) {
-      // when only using the pkg name the default behavior
-      // should be listing the existing tags
+      // when only using the pkg name the default behavior should be listing the existing tags
       return this.list(cmdName, opts)
     } else {
       throw this.usageError()
@@ -77,7 +76,7 @@ class DistTag extends BaseCommand {
     }
 
     // anything else is just a regular dist-tag command
-    // so we fallback to the non-workspaces implementation
+    // so we fall back to the non-workspaces implementation
     log.warn('dist-tag', 'Ignoring workspaces for specified package')
     return this.exec([cmdName, pkg, tag])
   }
@@ -119,7 +118,7 @@ class DistTag extends BaseCommand {
       },
       spec,
     }
-    await otplease(this.npm, reqOpts, o => regFetch(url, o))
+    await otplease(this.npm, reqOpts, o => npmFetch(url, o))
     output.standard(`+${t}: ${spec.name}@${version}`)
   }
 
@@ -145,7 +144,7 @@ class DistTag extends BaseCommand {
       method: 'DELETE',
       spec,
     }
-    await otplease(this.npm, reqOpts, o => regFetch(url, o))
+    await otplease(this.npm, reqOpts, o => npmFetch(url, o))
     output.standard(`-${tag}: ${spec.name}@${version}`)
   }
 
@@ -182,16 +181,15 @@ class DistTag extends BaseCommand {
       try {
         output.standard(`${name}:`)
         await this.list(npa(name), this.npm.flatOptions)
-      } catch (err) {
-        // set the exitCode directly, but ignore the error
-        // since it will have already been logged by this.list()
+      } catch {
+        // set the exitCode directly, but ignore the error since it will have already been logged by this.list()
         process.exitCode = 1
       }
     }
   }
 
   async fetchTags (spec, opts) {
-    const data = await regFetch.json(
+    const data = await npmFetch.json(
       `/-/package/${spec.escapedName}/dist-tags`,
       { ...opts, 'prefer-online': true, spec }
     )
