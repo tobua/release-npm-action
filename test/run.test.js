@@ -14,7 +14,7 @@ test('Release request in debug mode works without issues.', () => {
   } catch (error) {
     // NOTE action will always error since it cannot push to git repo.
     const output = `${error.stdout.toString()} ${error.stderr.toString()}`
-    // Debug mode triggered by NPM_TOKEN=debug
+    // Debug mode triggered.
     expect(output).toContain('Release requested through debug mode.')
     // Will not publish in debug mode.
     expect(output).toContain('Running release in dry run mode.')

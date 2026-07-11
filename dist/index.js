@@ -16,7 +16,7 @@ var getRelease = () => {
     release = true;
     type = "Release requested through manual workflow run.";
   }
-  if (getInput("NPM_TOKEN") === "debug") {
+  if (getInput("DEBUG") === "true") {
     release = true;
     type = "Release requested through debug mode.";
   }
@@ -38,7 +38,7 @@ var createWritableStream = () => {
 var createRelease = async () => {
   const currentBranch = execSync("git rev-parse --abbrev-ref HEAD").toString().trim();
   const branchConfiguration = { name: currentBranch };
-  const dryRun = getInput("DRY_RUN") === "true" || getInput("NPM_TOKEN") === "debug";
+  const dryRun = getInput("DRY_RUN") === "true";
   const debug = getInput("DEBUG") === "true";
   const channelInput = getInput("CHANNEL");
   const folder = getInput("FOLDER");
@@ -60,7 +60,6 @@ var createRelease = async () => {
   const env = {
     ...process.env,
     GITHUB_TOKEN: getInput("GITHUB_TOKEN"),
-    NPM_TOKEN: getInput("NPM_TOKEN"),
     NPM_CONFIG_USERCONFIG: resolve(process.cwd(), ".npmrc")
   };
   const logs = createWritableStream();
@@ -128,10 +127,6 @@ var createRelease = async () => {
 // index.js
 var run = async () => {
   try {
-    const token = getInput2("NPM_TOKEN");
-    if (!token) {
-      return setFailed2("Missing NPM_TOKEN action secret.");
-    }
     info2(`release-npm-action with node: ${execSync2("node -v").toString()}`);
     const { release, type } = getRelease();
     if (!release) {
