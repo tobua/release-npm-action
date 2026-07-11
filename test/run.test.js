@@ -3,7 +3,6 @@ import { execSync } from 'child_process'
 import { test, expect } from 'vitest'
 
 test('Release request in debug mode works without issues.', () => {
-  process.env.INPUT_NPM_TOKEN = 'debug'
   process.env.INPUT_DRY_RUN = 'true'
   process.env.INPUT_DEBUG = 'true'
   process.env.INPUT_GITHUB_TOKEN = 'something'

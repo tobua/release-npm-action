@@ -12,7 +12,20 @@ export default (env) => {
   });
 
   const regexp = new RegExp(
-    toReplace.map((envVar) => `${escapeRegExp(env[envVar])}|${escapeRegExp(encodeURI(env[envVar]))}`).join("|"),
+    toReplace
+      .flatMap((envVar) => {
+        const value = env[envVar];
+        const forms = new Set([
+          value,
+          encodeURI(value),
+          encodeURIComponent(value),
+          // The form emitted by `url.format()`, which `get-git-auth-url.js` uses to embed credentials
+          // in the repository URL: like `encodeURIComponent()`, but `:` separators are kept as is
+          value.split(":").map(encodeURIComponent).join(":"),
+        ]);
+        return [...forms].map(escapeRegExp);
+      })
+      .join("|"),
     "g"
   );
   return (output) =>

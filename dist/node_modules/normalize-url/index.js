@@ -40,6 +40,11 @@ const getCustomProtocol = urlString => {
 		const {protocol} = new URL(urlString);
 		const hasAuthority = urlString.slice(0, protocol.length + 2).toLowerCase() === `${protocol}//`;
 
+		// Avoid treating "localhost:port" (e.g. "localhost:9802") as a custom protocol.
+		if (protocol === 'localhost:' && !hasAuthority && /^\d{1,5}([/?#]|$)/.test(urlString.slice(protocol.length))) {
+			return undefined;
+		}
+
 		if (protocol.endsWith(':')
 			&& (!protocol.includes('.') || hasAuthority)
 			&& !supportedProtocols.has(protocol)) {

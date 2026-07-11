@@ -4,13 +4,7 @@ import { getRelease, createRelease } from './release.js'
 
 // Top-level await not yet supported out of the box with default eslint-parser.
 const run = async () => {
-  try {
-    const token = getInput('NPM_TOKEN')
-
-    if (!token) {
-      return setFailed('Missing NPM_TOKEN action secret.')
-    }
-
+  try { 
     info(`release-npm-action with node: ${execSync('node -v').toString()}`)
 
     const { release, type } = getRelease()

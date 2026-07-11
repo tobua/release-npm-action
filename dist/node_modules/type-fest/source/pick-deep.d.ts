@@ -14,6 +14,8 @@ It supports recursing into arrays.
 
 Use-case: Distill complex objects down to the components you need to target.
 
+Use [`Pick<T>`](https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys) if you only need one level deep.
+
 @example
 ```
 import type {PickDeep, PartialDeep} from 'type-fest';

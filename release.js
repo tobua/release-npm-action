@@ -15,7 +15,7 @@ export const getRelease = () => {
     type = 'Release requested through manual workflow run.'
   }
 
-  if (getInput('NPM_TOKEN') === 'debug') {
+  if (getInput('DEBUG') === 'true') {
     release = true
     type = 'Release requested through debug mode.'
   }
@@ -45,7 +45,7 @@ const createWritableStream = () => {
 export const createRelease = async () => {
   const currentBranch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
   const branchConfiguration = { name: currentBranch }
-  const dryRun = getInput('DRY_RUN') === 'true' || getInput('NPM_TOKEN') === 'debug'
+  const dryRun = getInput('DRY_RUN') === 'true'
   const debug = getInput('DEBUG') === 'true'
   const channelInput = getInput('CHANNEL')
   const folder = getInput('FOLDER')
@@ -73,7 +73,6 @@ export const createRelease = async () => {
   const env = {
     ...process.env,
     GITHUB_TOKEN: getInput('GITHUB_TOKEN'),
-    NPM_TOKEN: getInput('NPM_TOKEN'),
     NPM_CONFIG_USERCONFIG: resolve(process.cwd(), '.npmrc'),
   }
 
