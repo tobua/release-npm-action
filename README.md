@@ -29,6 +29,10 @@ jobs:
   build-test-release:
     runs-on: ubuntu-latest
     steps:
+      # Current GitHub action default npm doesn't yet support OIDC for trusted publishing.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - uses: actions/checkout@v6
       - run: npm install
       - run: npm run build
@@ -84,6 +88,10 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      # Current GitHub action default npm doesn't yet support OIDC for trusted publishing.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       # ...
       - uses: tobua/release-npm-action@v5
         with:
@@ -121,6 +129,10 @@ jobs:
       id-token: write # Required to mint token for npm package provenance
       contents: write # Needed to create and write release notes in GitHub release
     steps:
+      # Current GitHub action default npm doesn't yet support OIDC for trusted publishing.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - uses: actions/checkout@v6
       # ... install, built, test etc.
       - uses: tobua/release-npm-action@v5
