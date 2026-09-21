@@ -30,9 +30,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Current GitHub action default npm doesn't yet support OIDC for trusted publishing.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: 26
       - uses: actions/checkout@v6
       - run: npm install
       - run: npm run build
@@ -89,9 +89,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Current GitHub action default npm doesn't yet support OIDC for trusted publishing.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: 26
       # ...
       - uses: tobua/release-npm-action@v5
         with:
@@ -130,9 +130,9 @@ jobs:
       contents: write # Needed to create and write release notes in GitHub release
     steps:
       # Current GitHub action default npm doesn't yet support OIDC for trusted publishing.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: 26
       - uses: actions/checkout@v6
       # ... install, built, test etc.
       - uses: tobua/release-npm-action@v5
